@@ -1,0 +1,18 @@
+baseURL: 'https://blog.shoofler.app'
+languageCode: en-us
+title: 'Shoofler Development Blog'
+theme: ["PaperMod"]
+params:
+  defaultTheme: auto
+  disableThemeToggle: false
+outputs:
+  home:
+  - html
+  - rss
+  section:
+  - html
+  - rss
+  taxonomy:
+  - html
+  term:
+  - html
