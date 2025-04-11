@@ -4,15 +4,27 @@ body {
 }
 div.page {
 	width: 800px;
-	margin: 100px auto auto auto;
+	margin: 50px auto auto auto;
 	text-align: center;
 }
 
-h1 {
-	 font-size: 2.0em; 
-	 font-weight: bold;
+div.title {
+	font-size: 2.0em;
+	font-weight: bold;
+	margin-bottom: 10px;
 }
 
-p {
-	 font-size: 1.1em; 	
+div.subtitle {
+	color: #999;
+	margin-bottom: 50px;
 }
+
+div.main {
+	margin-bottom: 50px;	
+	line-height: 1.5;
+}
+
+div.footer {
+	font-size: 0.9em;
+}
+
