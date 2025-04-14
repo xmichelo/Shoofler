@@ -10,15 +10,23 @@ extension Shootool {
         /// Error thrown when an environment variable is not not.
         case EnviromentVariableNotSet(String)
         
+        /// Error thrown when the working directory could not be changed.
+        case couldNotChangeWorkingDirectory(String)
+        
         /// The description of the error.
         public var description: String {
             switch self {
             case .shellCommandFailed(let command):
-                return "The following command failed: \(command)."
+                return "The following command failed: '\(command)'"
+                
             case .commandNotFound(let message):
                 return "The shell command '\(message)' was not found."
+                
             case .EnviromentVariableNotSet(let variable):
-                return "The variable \(variable) is not defined."
+                return "The variable '\(variable)' is not defined."
+                
+            case .couldNotChangeWorkingDirectory(let path):
+                return "Could not change working directory to '\(path)'."
             }
         }
     }

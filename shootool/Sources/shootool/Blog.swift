@@ -1,5 +1,6 @@
 import ArgumentParser
 import Darwin
+import Foundation
 
 extension Shootool {
     /// The `blog` command struct.
@@ -23,10 +24,11 @@ extension Shootool.Blog {
         
         /// Perform the `blog publish` sub-command.
         mutating func run() throws {
-            try Shell.checkExecutableIsAvailable("find")
-            try Shell.checkExecutableIsAvailable("rsync")
             try Shell.checkExecutableIsAvailable("hugo")
-            try _ = Shell.getEnvironmentVariable("SHOOTOOL_RSYNC_REMOTE")
+            try Shell.changeWorkingDirectory(to: "../www/blog")
+            let syncCommand = try Shell.getEnvironmentVariable("SHOOTOOL_BLOG_SYNC_COMMAND")
+            _ = try Shell.execute(command: "hugo")
+            _ = try Shell.execute(command: syncCommand)
         }
     }
 }
