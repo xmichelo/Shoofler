@@ -2,17 +2,32 @@ baseURL: 'https://blog.shoofler.app'
 languageCode: en-us
 title: 'Shoofler Development Blog'
 theme: ["PaperMod"]
+
 params:
+  env: production
   defaultTheme: auto
   disableThemeToggle: false
+  socialIcons:
+    - name: mastodon
+      url: "https://mastodon.social/@xmichelo"
+    - name: github
+      url: "https://github.com/xmichelo/Shoofler"
+    - name: rss
+      url: "/index.xml"
+  homeInfoParams:
+    title: Shoofler Development Blog
+    Content: >
+      Welcome to the [Shoofler](https://shoofler) developement blog. 
+
+      I talk about Shoofler, Swift, app development, and other related topics.
+
 outputs:
   home:
   - html
   - rss
-  section:
-  - html
-  - rss
-  taxonomy:
-  - html
-  term:
-  - html
+
+menu:
+  main:
+    - identifier: home
+      name: shoofler.app
+      url: https://shoofler.app
