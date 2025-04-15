@@ -20,9 +20,10 @@ struct  Shell {
     ///
     /// - Parameters:
     ///     - command: The command to execute
+    ///     - verbose: should the standard output and error being printed if the function succeed.
     ///
     /// - Returns: The ``Result`` of the execution
-    static func executeNoThrow(command: String) -> Shell.Result {
+    static func executeNoThrow(command: String, verbose: Bool = false) -> Shell.Result {
         let process = Process()
         let stdoutPipe = Pipe()
         let stderrPipe = Pipe()
@@ -37,15 +38,19 @@ struct  Shell {
         do {
             try process.run()
             process.waitUntilExit()
+            let success = process.terminationStatus == 0
             let stdoutData = stdoutPipe.fileHandleForReading.readDataToEndOfFile()
             let stderrData = stderrPipe.fileHandleForReading.readDataToEndOfFile()
+            
             stdoutStr = String(data: stdoutData, encoding: .utf8) ?? ""
-            if !stdoutStr.isEmpty {
-                print(stdoutStr)
-            }
             stderrStr = String(data: stderrData, encoding: .utf8) ?? ""
-            if !stderrStr.isEmpty {
-                print(stderrStr)
+            if (!success || verbose) {
+                if !stdoutStr.isEmpty {
+                    print(stdoutStr)
+                }
+                if !stderrStr.isEmpty {
+                    print(stderrStr)
+                }
             }
             return Shell.Result(command: command, stdout: stdoutStr, stderr: stderrStr, terminationStatus: process.terminationStatus)
         } catch {
@@ -57,13 +62,14 @@ struct  Shell {
     /// Execute a the given command and return the result.
     ///
     /// - Parameters:
-    ///  - command: The command to execute.
+    ///     - command: The command to execute.
+    ///     - verbose: should the standard output and error being printed if the function succeed.
     ///
     /// - Returns: The ``Result`` of the execution.
     ///
     /// - Throws: `Shooltool.RuntimeError.shellCommandFailed` in case of failure.
     static func execute(command: String, verbose: Bool = false) throws -> Shell.Result {
-        let result = executeNoThrow(command: command)
+        let result = executeNoThrow(command: command, verbose: verbose)
         if result.terminationStatus != 0 {
             throw Shootool.RuntimeError.shellCommandFailed(command)
         }

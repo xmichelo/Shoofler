@@ -8,6 +8,6 @@ struct Shootool: ParsableCommand {
     /// Configuration for the shootool command-line automation tool
     static let configuration = CommandConfiguration(
         abstract: "Automation tool for Shoofler.",
-        subcommands: [Blog.self]
+        subcommands: [Blog.self, Website.self]
     )
 }
