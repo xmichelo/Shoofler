@@ -6,5 +6,11 @@ struct ShooflerApp: App {
         WindowGroup {
             ContentView()
         }
+        MenuBarExtra("Shoofler", image: "MenuBarIcon") {
+            Button("Quit") {
+                NSApplication.shared.terminate(self)
+            }
+            .keyboardShortcut("q", modifiers: .command)
+        }
     }
 }
