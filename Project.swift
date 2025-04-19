@@ -1,4 +1,5 @@
 import ProjectDescription
+import Foundation
 
 let project = Project(
     name: "Shoofler",
@@ -7,17 +8,28 @@ let project = Project(
             name: "Shoofler",
             destinations: .macOS,
             product: .app,
-            bundleId: "io.tuist.Shoofler",
-            infoPlist: .default,
+            bundleId: "app.shoofler.Shoofler",
+            infoPlist: .extendingDefault(with: [
+                "CFBundleDisplayName": "$(PRODUCT_NAME)",
+                "CFBundleName": "$(PRODUCT_NAME)",
+                "CFBundleShortVersionString": "0.1.0",
+                "CFBundleVersion": "1",
+            ]),
             sources: ["Shoofler/Sources/**"],
             resources: ["Shoofler/Resources/**"],
-            dependencies: []
+            dependencies: [],
+            settings: .settings(
+                base: SettingsDictionary()
+                    .automaticCodeSigning(devTeam: Environment.shooflerDevTeamId.getString(default: "")) // reads TUIST_SHOOFLER_DEV_TEAM_ID)
+                    .codeSignIdentity("Apple Development")
+                    .merging(["ENABLE_HARDENED_RUNTIME": "YES"])
+            )
         ),
         .target(
             name: "ShooflerTests",
             destinations: .macOS,
             product: .unitTests,
-            bundleId: "io.tuist.ShooflerTests",
+            bundleId: "app.shoofler.ShooflerTests",
             infoPlist: .default,
             sources: ["Shoofler/Tests/**"],
             resources: [],
