@@ -4,6 +4,12 @@ title: 'Shoofler Development Blog'
 theme: ["PaperMod"]
 
 params:
+  social:
+    fediverse_creator: "@shoofler@mastodon.social"
+  site: 'Shoofler Development Blog'
+  description: 'Shoofler, Swift, app development, and other related topics.'
+  images: 
+    - "/assets/ShooflerIcon512.png"
   env: production
   defaultTheme: auto
   disableThemeToggle: false
