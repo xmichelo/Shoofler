@@ -35,5 +35,17 @@ let project = Project(
             resources: [],
             dependencies: [.target(name: "Shoofler")]
         ),
+        .target(
+            name: "shootool",
+            destinations: .macOS,
+            product: .commandLineTool,
+            bundleId: "io.tuist.shootool",
+            infoPlist: .default,
+            sources: ["shootool/Sources/**"],
+            resources: [],
+            dependencies: [
+                .external(name: "ArgumentParser")
+            ]
+        ),
     ]
 )

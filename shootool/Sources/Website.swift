@@ -28,7 +28,7 @@ extension Shootool.Website {
             print("Performing checks.")
             try Shell.checkExecutableIsAvailable("hugo")
             let syncCommand = try Shell.getEnvironmentVariable("SHOOTOOL_WEBSITE_SYNC_COMMAND")
-            try Shell.changeWorkingDirectory(to: "../www")
+            try Shell.changeWorkingDirectory(to: "www")
             print("Sync-ing website.")
             _ = try Shell.execute(command: syncCommand, verbose: verbose)
         }

@@ -30,7 +30,7 @@ extension Shootool.Blog {
             print("Performing checks.")
             try Shell.checkExecutableIsAvailable("hugo")
             let syncCommand = try Shell.getEnvironmentVariable("SHOOTOOL_BLOG_SYNC_COMMAND")
-            try Shell.changeWorkingDirectory(to: "../www/blog")
+            try Shell.changeWorkingDirectory(to: "www/blog")
             print("Generating blog.")
             _ = try Shell.execute(command: "hugo", verbose: verbose)
             print("Sync-ing blog.")
