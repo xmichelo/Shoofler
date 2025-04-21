@@ -19,10 +19,12 @@ let project = Project(
             resources: ["Shoofler/Resources/**"],
             dependencies: [],
             settings: .settings(
-                base: SettingsDictionary()
+                base: SettingsDictionary(),
+                release: SettingsDictionary()
                     .automaticCodeSigning(devTeam: Environment.shooflerDevTeamId.getString(default: "")) // reads TUIST_SHOOFLER_DEV_TEAM_ID)
                     .codeSignIdentity("Apple Development")
                     .merging(["ENABLE_HARDENED_RUNTIME": "YES"])
+
             )
         ),
         .target(
