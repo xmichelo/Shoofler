@@ -14,6 +14,7 @@ let project = Project(
                 "CFBundleName": "$(PRODUCT_NAME)",
                 "CFBundleShortVersionString": "0.1.0",
                 "CFBundleVersion": "1",
+                "LSApplicationCategoryType": "public.app-category.productivity",
             ]),
             sources: ["Shoofler/Sources/**"],
             resources: ["Shoofler/Resources/**"],
