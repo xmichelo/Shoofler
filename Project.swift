@@ -21,11 +21,7 @@ let project = Project(
             dependencies: [],
             settings: .settings(
                 base: SettingsDictionary(),
-                release: SettingsDictionary()
-                    .automaticCodeSigning(devTeam: Environment.shooflerDevTeamId.getString(default: "")) // reads TUIST_SHOOFLER_DEV_TEAM_ID)
-                    .codeSignIdentity("Apple Development")
-                    .merging(["ENABLE_HARDENED_RUNTIME": "YES"])
-
+                release: SettingsDictionary().signing()
             )
         ),
         .target(
@@ -52,3 +48,20 @@ let project = Project(
         ),
     ]
 )
+
+extension Dictionary where Key == String, Value == ProjectDescription.SettingValue {
+    ///
+    public func signing() -> ProjectDescription.SettingsDictionary {
+        let devTeam = Environment.shooflerDevTeamId.getString(default: "") // reads TUIST_SHOOFLER_DEV_TEAM_ID
+        if devTeam.isEmpty {
+            return self
+        }
+        
+        return self
+            .automaticCodeSigning(devTeam: devTeam)
+            .codeSignIdentity("Apple Development")
+            .merging(["ENABLE_HARDENED_RUNTIME": "YES"])
+    }
+
+}
+
