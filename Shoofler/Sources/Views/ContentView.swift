@@ -1,11 +1,21 @@
 import SwiftUI
 
 public struct ContentView: View {
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var isAccessibilityEnabled = AXIsProcessTrusted()
+    
     public init() {}
 
     public var body: some View {
-        Text("Shoofler")
-            .padding()
+        VStack {
+            if isAccessibilityEnabled {
+                Text("Shoofler")
+            } else {
+                AccessibilityRequestView()
+            }
+        }.onReceive(timer) { _ in
+            isAccessibilityEnabled = AXIsProcessTrusted();
+        }
     }
 }
 

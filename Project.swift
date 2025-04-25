@@ -13,7 +13,7 @@ let project = Project(
                 "CFBundleDisplayName": "$(PRODUCT_NAME)",
                 "CFBundleName": "$(PRODUCT_NAME)",
                 "CFBundleShortVersionString": "0.1.0",
-                "CFBundleVersion": "1",
+                "CFBundleVersion": "3",
                 "LSApplicationCategoryType": "public.app-category.productivity",
             ]),
             sources: ["Shoofler/Sources/**"],
