@@ -2,19 +2,19 @@ import SwiftUI
 
 @main
 struct ShooflerApp: App {
+    static let mainWIndowID = "shoofler-main-window"
     @AppStorage("theme") private var theme: Theme = .system
     
     var body: some Scene {
-        WindowGroup {
+        Window("Shoofler", id: ShooflerApp.mainWIndowID) {
             ContentView()
                 .preferredColorScheme(theme.colorScheme)
         }
+        
         MenuBarExtra("Shoofler", image: "MenuBarIcon") {
-            Button("Quit") {
-                NSApplication.shared.terminate(self)
-            }
-            .keyboardShortcut("q", modifiers: .command)
+            MenuBarContentView()
         }
+        
         Settings(content: SettingsView.init)
     }
 }
