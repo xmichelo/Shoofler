@@ -3,6 +3,12 @@ import Foundation
 
 let project = Project(
     name: "Shoofler",
+    settings: .settings(
+        base: [
+            "ENABLE_USER_SCRIPT_SANDBOXING": true,
+            "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": true,
+        ]
+    ),
     targets: [
         .target(
             name: "Shoofler",
@@ -20,7 +26,6 @@ let project = Project(
             resources: ["Shoofler/Resources/**"],
             dependencies: [],
             settings: .settings(
-                base: SettingsDictionary(),
                 release: SettingsDictionary().signing()
             )
         ),

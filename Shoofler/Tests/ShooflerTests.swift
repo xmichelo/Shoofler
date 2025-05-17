@@ -1,8 +1,12 @@
 import Foundation
-import XCTest
+import Testing
 
-final class ShooflerTests: XCTestCase {
-    func test_twoPlusTwo_isFour() {
-        XCTAssertEqual(2+2, 4)
+@testable import Shoofler
+
+struct SHooflerTests {
+    @Test
+    func testSampleGroup() async throws {
+        let vault = Vault.sample
+        debugPrint(vault)
     }
 }

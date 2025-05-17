@@ -12,9 +12,7 @@ struct ShooflerApp: App {
                 .preferredColorScheme(theme.colorScheme)
                 .onAppear {
                     NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
-                        let path = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first!.appendingPathComponent("keyboard.log")
-                        do { try "A key was pressed".write(to: path, atomically: true, encoding: String.Encoding.utf8) } catch {}
-                        print("A key was pressed")
+                        print(event)
                     }
                 }
         }
