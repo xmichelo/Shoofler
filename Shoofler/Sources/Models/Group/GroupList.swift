@@ -1,6 +1,6 @@
 import Foundation
 
-typealias GroupList = [UUID: Group]
+typealias GroupList = [Group]
 
 extension GroupList {
     /// A sample group list.
@@ -12,22 +12,15 @@ extension GroupList {
         return groupList
     }
     
-    /// Initalizer that use an array of group to initialize the ``GroupList``.
-    ///
-    /// - Parameters:
-    ///     - groups: The array of groups.
-    init(groups: [Group]) {
-        self.init()
-        groups.forEach { group in
-            self[group.id] = group
-        }
-    }
-    
-    /// Add or replace a group to the list.
+    /// Adds or replaces a group to the list.
     ///
     /// - parameters:
     ///     - group: The group to add or replace.
     mutating func add(_ group: Group) {
-        self[group.id] = group
+        if let index = firstIndex(where: { $0.id == group.id }) {
+            self[index] = group
+        } else {
+            append(group)
+        }
     }
 }

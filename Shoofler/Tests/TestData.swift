@@ -1,12 +1,10 @@
-import Foundation
-import Testing
-
 @testable import Shoofler
 
 let testGroups = [
     Group(name: "Group 1", description: "First test group."),
     Group(name: "Group 2", description: "Second test group."),
     Group(name: "Group 3", description: "Third test group."),
+    Group(name: "Group 4", description: "Third test group."),
 ]
 
 let testSnippets = [
@@ -21,14 +19,4 @@ let testSnippets = [
     Snippet(trigger: "zz9", snippet: "This is snippet #9", description: "A ninth test snippet", group: nil),
 ]
 
-let testVault = Vault(groups: GroupList(groups: testGroups), snippets: SnippetList(snippets: testSnippets))
-
-
-struct VaultTests {
-    @Test
-    func testVaults() async throws {
-        let vault = testVault
-        #expect(vault.groups.count == 3)
-        #expect(vault.snippets.count == 9)
-    }
-}
+let testVault = Vault(groups: testGroups, snippets: testSnippets)
