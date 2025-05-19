@@ -26,7 +26,7 @@ let project = Project(
             resources: ["Shoofler/Resources/**"],
             dependencies: [],
             settings: .settings(
-                release: SettingsDictionary().signing()
+                base: SettingsDictionary().signing()
             )
         ),
         .target(
