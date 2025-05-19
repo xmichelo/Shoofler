@@ -14,14 +14,16 @@ struct Vault: Codable {
         if vault.groups.isEmpty {
             return vault
         }
-
+        
         var i = 0
-        vault.snippets = vault.snippets.map { snippet in
-            var snippet = snippet
-            snippet.groupID = i != 0 ? vault.groups[i % vault.groups.count].id : nil
-            i += 1
-            return snippet
-        }
+        vault.snippets = SnippetList(
+            from: vault.snippets.map { snippet in
+                var snippet = snippet
+                snippet.groupID = i != 0 ? vault.groups[i % vault.groups.count].id : nil
+                i += 1
+                return snippet
+            }
+        )
         
         return vault
     }
