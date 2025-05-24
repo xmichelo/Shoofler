@@ -1,15 +1,27 @@
 import Foundation
 
-typealias GroupList = [Group]
+typealias GroupList = [UUID:Group]
 
-extension GroupList {
-    /// A sample group list.
-    static var sample: GroupList {
-        var groupList = GroupList()
-        groupList.add(Group(id: UUID(), name: "First Group", description: "First group"))
-        groupList.add(Group(id: UUID(), name: "Second Group", description: "Second group"))
-        groupList.add(Group(id: UUID(), name: "Third Group"))
-        return groupList
+public extension GroupList {
+    /// Initializes a snippet list from an array of snippets.
+    ///
+    /// if a duplicate ID is present, only the last group with this ID will be in the returned list.
+    ///
+    /// - parameters:
+    ///     - array: the array of snippets.
+    ///
+    /// - returns: The snippet list build using the snippets in array.
+    init(from array: [Group]) {
+        self = .init(minimumCapacity: array.count)
+        array.forEach { self[$0.id] = $0 }
+    }
+
+    /// Test whether the list contains a group with the given ID.
+    ///
+    /// - parameters
+    ///
+    func contains(id: UUID) -> Bool {
+        return self.keys.contains(id)
     }
     
     /// Adds or replaces a group to the list.
@@ -17,10 +29,19 @@ extension GroupList {
     /// - parameters:
     ///     - group: The group to add or replace.
     mutating func add(_ group: Group) {
-        if let index = firstIndex(where: { $0.id == group.id }) {
-            self[index] = group
-        } else {
-            append(group)
-        }
+        self[group.id] = group
     }
+}
+
+public extension GroupList {
+    /// A sample group list.
+    static var sample: Self {
+        var groupList = GroupList()
+        groupList.add(Group(id: UUID(), name: "First Group", description: "First group"))
+        groupList.add(Group(id: UUID(), name: "Second Group", description: "Second group"))
+        groupList.add(Group(id: UUID(), name: "Third Group"))
+        return groupList
+    }
+    
+
 }
