@@ -1,30 +1,40 @@
 import Foundation
 
 /// A structure storing a list of snippets.
-struct SnippetList: Codable, Copyable {
-    typealias Index = Int
+public struct SnippetList: Codable, Copyable {
+    // MARK: - type aliases
+    
+    public typealias Index = Int
+    
+    // MARK: - Stored properties
     
     /// The array storing the snippets
-    private var array: [Snippet]
+    private var snippets: [Snippet] = []
 
-    /// Initialize the list from an array of snippets.
+    // MARK: - Static factory functions
+    
+    /// Creates a snippet list from an array of snippets.
+    ///
+    /// if a duplicate ID is present, only the last snippet with this ID will be in the returned list.
     ///
     /// - parameters:
-    ///     - array: the array of snippets to initialize the list with.
-    init(from array: [Snippet] = []) {
-        self.array = array
+    ///     - array: the array of snippets.
+    ///
+    /// - returns: The snippet list build using the snippets in array.
+    static func from(array: [Snippet]) -> SnippetList {
+        var result = SnippetList()
+        result.snippets.reserveCapacity(array.count)
+        array.forEach { result.add($0) }
+        return result
     }
 
-    /// A copy of the array used internally to store the snippet list.
-    var internalArray: [Snippet] {
-        array
-    }
+    // MARK: - member functions
     
     /// Test whether the list contains a snippets with the given UUID.
     ///
     /// - parameters
     ///
-    func contains(id: UUID) -> Bool {
+    public func contains(id: UUID) -> Bool {
         return self.contains(where: { $0.id == id })
     }
     
@@ -33,19 +43,19 @@ struct SnippetList: Codable, Copyable {
     /// - parameters:
     ///     - isIncluded: the predicate
     /// - returns: an array of the elements that `isIncluded` allowed.
-    func filter(_ isIncluded: (Snippet) -> Bool) -> SnippetList {
-        return SnippetList(from: array.filter(isIncluded))
+    public func filter(_ isIncluded: (Snippet) -> Bool) -> SnippetList {
+        return SnippetList.from(array: snippets.filter(isIncluded))
     }
 
     /// Adds or replaces a snippet to the list.
     ///
     /// - parameters;
     ///     - snippet: The snippet to add or modify.
-    mutating func add(_ snippet: Snippet) {
+    public mutating func add(_ snippet: Snippet) {
         if let i = self.firstIndex(where: { $0.id == snippet.id }) {
-            array[i] = snippet
+            snippets[i] = snippet
         } else {
-            array.append(snippet)
+            snippets.append(snippet)
         }
     }
     
@@ -56,20 +66,22 @@ struct SnippetList: Codable, Copyable {
     /// - return true if and only a snippet with the given UUID exists in the list.
     ///
     /// - returns: The list of snippets belonging to the group.
-    func snippetsOf(groupID: UUID) -> SnippetList {
+    public func snippetsOf(groupID: UUID) -> SnippetList {
         return self.filter { $0.groupID == groupID }
     }
 }
 
+// MARK: - BidirectionalCollection
+
 extension SnippetList: BidirectionalCollection {
     /// The start index of the sequence
-    var startIndex: Int {
-        return array.startIndex
+    public var startIndex: Int {
+        return snippets.startIndex
     }
     
     /// The end index of the sequence
-    var endIndex: Int {
-        return array.endIndex
+    public var endIndex: Int {
+        return snippets.endIndex
     }
 
     /// Returns the index of the element after the element at index `i`.
@@ -78,8 +90,8 @@ extension SnippetList: BidirectionalCollection {
     ///     - i: the index
     ///
     /// - returns: the index of the element after `ì`.
-    func index(after i: Int) -> Int {
-        return array.index(after: i)
+    public func index(after i: Int) -> Int {
+        return snippets.index(after: i)
     }
     
     /// Returns the index of the element after the element at index `i`.
@@ -88,8 +100,8 @@ extension SnippetList: BidirectionalCollection {
     ///     - i: the index
     ///
     /// - returns: the index of the element before `ì`.
-    func index(before i: Int) -> Int {
-        return array.index(before: i)
+    public func index(before i: Int) -> Int {
+        return snippets.index(before: i)
     }
 
     /// Access the element of the snippet list at the given index.
@@ -98,25 +110,27 @@ extension SnippetList: BidirectionalCollection {
     ///     - index: The index of the snippet.
     /// - returns:
     ///     - The snippet at the given index.
-    subscript(_ index: Int) -> Snippet {
+    public subscript(_ index: Int) -> Snippet {
         get {
-            return array[index]
+            return snippets[index]
         }
         set(newValue) {
-            array[index] = newValue
+            snippets[index] = newValue
         }
     }
 }
 
-extension SnippetList {
+// MARK: - Sample data
+
+public extension SnippetList {
     /// A sample list of snippets with no groups.
-    static let sample = SnippetList(
-        from: [
-            Snippet(id: UUID(), trigger: "!em1", snippet: "first@example.com", description: "First email address"),
-            Snippet(id: UUID(), trigger: "!em2", snippet: "second@example.com", description: "Second email address"),
-            Snippet(id: UUID(), trigger: "!em3", snippet: "third@example.com", description: "Third email address"),
-            Snippet(id: UUID(), trigger: "!em4", snippet: "fourth@example.com", description: "Fourth email address"),
-            Snippet(id: UUID(), trigger: "!em5", snippet: "fifth@example.com", description: "Fifth email address"),
+    static let sample = SnippetList.from(
+        array: [
+            Snippet(trigger: "!em1", snippet: "first@example.com", description: "First email address"),
+            Snippet(trigger: "!em2", snippet: "second@example.com", description: "Second email address"),
+            Snippet(trigger: "!em3", snippet: "third@example.com", description: "Third email address"),
+            Snippet(trigger: "!em4", snippet: "fourth@example.com", description: "Fourth email address"),
+            Snippet(trigger: "!em5", snippet: "fifth@example.com", description: "Fifth email address"),
         ]
     )
 }

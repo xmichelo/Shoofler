@@ -5,7 +5,7 @@ let project = Project(
     name: "Shoofler",
     settings: .settings(
         base: [
-            "ENABLE_USER_SCRIPT_SANDBOXING": true,
+            "ENABLE_USER_SCRIPT_SANDBOXING": false,
             "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": true,
         ]
     ),
@@ -37,7 +37,10 @@ let project = Project(
             infoPlist: .default,
             sources: ["Shoofler/Tests/**"],
             resources: [],
-            dependencies: [.target(name: "Shoofler")]
+            dependencies: [.target(name: "Shoofler")],
+            settings: .settings(
+                base: SettingsDictionary().signing()
+            )
         ),
         .target(
             name: "shootool",
@@ -55,7 +58,6 @@ let project = Project(
 )
 
 extension Dictionary where Key == String, Value == ProjectDescription.SettingValue {
-    ///
     public func signing() -> ProjectDescription.SettingsDictionary {
         let devTeam = Environment.shooflerDevTeamId.getString(default: "") // reads TUIST_SHOOFLER_DEV_TEAM_ID
         if devTeam.isEmpty {

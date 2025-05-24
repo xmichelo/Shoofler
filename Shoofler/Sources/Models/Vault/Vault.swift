@@ -15,16 +15,16 @@ struct Vault: Codable {
             return vault
         }
         
+        // we assigned groups, except to the first item.
         var i = 0
-        vault.snippets = SnippetList(
-            from: vault.snippets.map { snippet in
-                var snippet = snippet
-                snippet.groupID = i != 0 ? vault.groups[i % vault.groups.count].id : nil
-                i += 1
-                return snippet
-            }
-        )
+        let filtered = vault.snippets.map { snippet in
+            var snippet = snippet
+            snippet.groupID = i != 0 ? vault.groups[i % vault.groups.count].id : nil
+            i += 1
+            return snippet
+        }
         
+        vault.snippets = SnippetList.from(array: filtered)
         return vault
     }
 }

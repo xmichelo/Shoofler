@@ -1,21 +1,21 @@
 import Foundation
 
 /// Structure for snippets.
-struct Snippet: Codable, Identifiable {
+public struct Snippet: Codable, Identifiable {
     /// The snippet ID.
-    var id: UUID
+    public let id: UUID
     
     /// The trigger for the snippet.
-    var trigger: String
+    public var trigger: String
     
     /// The content of the snippet.
-    var snippet: String
+    public var snippet: String
     
     /// The optional description of the Snippet.
-    var description: String?
+    public var description: String? = nil
     
     /// The optional group of the snipppet.
-    var groupID: UUID?
+    public var groupID: UUID? = nil
 
     /// Creates a snippet.
     ///
@@ -25,7 +25,7 @@ struct Snippet: Codable, Identifiable {
     ///     - snippet: the content of the snippet.
     ///     - description: the optional description of the snippet.
     ///     - group: the optional group of the snippet.
-    init(id: UUID = UUID(), trigger: String, snippet: String, description: String? = nil, group: UUID? = nil) {
+    public init(id: UUID = UUID(), trigger: String, snippet: String, description: String? = nil, group: UUID? = nil) {
         self.id = id
         self.trigger = trigger
         self.snippet = snippet
