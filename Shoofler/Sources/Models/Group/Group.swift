@@ -1,18 +1,23 @@
 import Foundation
 
 /// A structure representing a snippet group
-struct Group: Codable, Identifiable {
+public struct Group: Codable, Identifiable {
     /// The ID of the group.
-    var id: UUID
+    public var id: UUID
     
     /// The name of the group.
-    var name: String
+    public var name: String
     
     /// The optional description of the group.
-    var description: String?
+    public var description: String?
     
     /// Creates a group.
-    init(id: UUID = .init(), name: String, description: String? = nil) {
+    ///
+    /// - Parameters:
+    ///     - id: the group ID.
+    ///     - name: the group name.
+    ///     - description: the group description.
+    public init(id: UUID = .init(), name: String, description: String? = nil) {
         self.id = id
         self.name = name
         self.description = description
