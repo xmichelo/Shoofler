@@ -20,6 +20,6 @@ struct ShooflerApp: App {
             MenuBarContentView()
         }
         
-        Settings(content: SettingsView.init)
+        SwiftUI.Settings(content: SettingsView.init)
     }
 }
