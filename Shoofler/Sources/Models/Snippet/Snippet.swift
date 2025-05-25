@@ -9,7 +9,7 @@ public struct Snippet: Codable, Identifiable {
     public var trigger: String
     
     /// The content of the snippet.
-    public var snippet: String
+    public var content: String
     
     /// The optional description of the Snippet.
     public var description: String? = nil
@@ -22,13 +22,13 @@ public struct Snippet: Codable, Identifiable {
     /// - parameters:
     ///     - id: the snippet ID. If none is provided, a new random UUID is used.
     ///     - trigger: the trigger for the snippet.
-    ///     - snippet: the content of the snippet.
+    ///     - content: the content of the snippet.
     ///     - description: the optional description of the snippet.
     ///     - group: the optional group of the snippet.
-    public init(id: UUID = UUID(), trigger: String, snippet: String, description: String? = nil, group: UUID? = nil) {
+    public init(id: UUID = UUID(), trigger: String, content: String, description: String? = nil, group: UUID? = nil) {
         self.id = id
         self.trigger = trigger
-        self.snippet = snippet
+        self.content = content
         self.description = description
         self.groupID = group
     }

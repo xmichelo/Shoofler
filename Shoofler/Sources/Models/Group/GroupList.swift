@@ -18,8 +18,11 @@ public extension GroupList {
 
     /// Test whether the list contains a group with the given ID.
     ///
-    /// - parameters
+    /// - parameters:
+    ///     - id The group ID.
     ///
+    /// - returns:
+    ///     - true if and only if the list contains the group with the given ID.
     func contains(id: UUID) -> Bool {
         return self.keys.contains(id)
     }

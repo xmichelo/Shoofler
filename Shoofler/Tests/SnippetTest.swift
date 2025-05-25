@@ -8,16 +8,16 @@ struct SnippetTests {
     func testSnippetInit() {
         let uuid = UUID()
         let guuid = UUID()
-        var snippet = Snippet(id: uuid, trigger: "trigger", snippet: "snippet", description: "description", group: guuid)
+        var snippet = Snippet(id: uuid, trigger: "trigger", content: "snippet", description: "description", group: guuid)
         #expect(snippet.id == uuid)
         #expect(snippet.trigger == "trigger")
-        #expect(snippet.snippet == "snippet")
+        #expect(snippet.content == "snippet")
         #expect(snippet.description == "description")
         #expect(snippet.groupID == guuid)
         
-        snippet = Snippet(trigger: "trigger", snippet: "snippet")
+        snippet = Snippet(trigger: "trigger", content: "snippet")
         #expect(snippet.trigger == "trigger")
-        #expect(snippet.snippet == "snippet")
+        #expect(snippet.content == "snippet")
         #expect(snippet.description == nil)
         #expect(snippet.groupID == nil)
     }
