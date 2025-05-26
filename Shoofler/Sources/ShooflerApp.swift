@@ -1,10 +1,17 @@
 import SwiftUI
+import ComposableArchitecture
 
 @main
 struct ShooflerApp: App {
-    @Bindable var store = DataStore.shared
+    @Bindable var store: StoreOf<AppFeature>
     private var monitor: Any?
+    
     static let mainWIndowID = "shoofler-main-window"
+    
+    init() {
+        store = DataStore.shared
+        store.scope(state: \.settings, action: \.settings).send(.loadSettings)
+    }
     
     var body: some Scene {
         
@@ -12,13 +19,11 @@ struct ShooflerApp: App {
             ContentView()
             .preferredColorScheme(store.settings.theme.colorScheme)
             .onAppear {
-                store.scope(state: \.settings, action: \.settings).send(.loadSettings)
                 NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
                     print(event)
                 }
             }
         }
-        
         
         MenuBarExtra("Shoofler", image: "MenuBarIcon") {
             MenuBarContentView()
