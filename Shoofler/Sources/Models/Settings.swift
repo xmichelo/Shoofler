@@ -28,3 +28,4 @@ struct NullSettingsClient: SettingsClientProtocol {
     }
     mutating func save(_ settings: Settings) async throws {}
 }
+

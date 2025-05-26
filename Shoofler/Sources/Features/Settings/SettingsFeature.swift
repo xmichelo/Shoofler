@@ -3,6 +3,7 @@ import SwiftUI
 
 @Reducer
 struct SettingsFeature {
+    @ObservableState
     struct State: Equatable {
         var general = GeneralSettingsFeature.State()
         var appearance = AppearanceSettingsFeature.State()
@@ -27,9 +28,7 @@ struct SettingsFeature {
 }
 
 struct SettingsView: View {
-    let store = Store(initialState: SettingsFeature.State()) {
-        SettingsFeature()
-    }
+    @Bindable var store = DataStore.shared.scope(state: \.settings, action: \.settings)
     
     var body: some View {
         TabView {
@@ -41,7 +40,7 @@ struct SettingsView: View {
             }
         }
         .frame(minWidth: 300)
-        //.preferredColorScheme(theme.colorScheme)
+        .preferredColorScheme(store.appearance.theme.colorScheme)
     }
 }
 

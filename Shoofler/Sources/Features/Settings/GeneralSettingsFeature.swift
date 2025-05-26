@@ -4,26 +4,35 @@ import ComposableArchitecture
 
 @Reducer
 struct GeneralSettingsFeature {
+    @ObservableState
     struct State: Equatable {
         var dummy: Bool = false
     }
     
     enum Action {
-        case setDummyValue(Bool)
+        case toggledDummy(Bool)
     }
     
     var body: some ReducerOf<Self> {
         Reduce { state, action in
-            return .none
+            switch action {
+            case .toggledDummy(let isOn):
+                state.dummy = isOn
+                print("Dummy is now \(isOn)")
+                return .none
+            }
         }
     }
 }
 
 struct GeneralSettingsView: View {
-    let store: StoreOf<GeneralSettingsFeature>
+    @Bindable var store: StoreOf<GeneralSettingsFeature>
     
     var body: some View {
-        Text("General Settings")
+        Section("Dummy") {
+            Toggle("Dummy", isOn: $store.dummy.sending(\.toggledDummy))
+        }
+        .padding()
     }
 }
 
