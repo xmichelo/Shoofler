@@ -7,19 +7,23 @@ struct ShooflerApp: App {
     static let mainWIndowID = "shoofler-main-window"
     
     var body: some Scene {
+        
         Window("Shoofler", id: ShooflerApp.mainWIndowID) {
             ContentView()
-                .preferredColorScheme(store.settings.appearance.theme.colorScheme)
-                .onAppear {
-                    NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
-                        print(event)
-                    }
+            .preferredColorScheme(store.settings.theme.colorScheme)
+            .onAppear {
+                store.scope(state: \.settings, action: \.settings).send(.loadSettings)
+                NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
+                    print(event)
                 }
+            }
         }
+        
+        
         MenuBarExtra("Shoofler", image: "MenuBarIcon") {
             MenuBarContentView()
         }
         
-        SwiftUI.Settings(content: SettingsView.init)
+        Settings { SettingsView.init(store: store.scope(state: \.settings, action: \.settings)) }
     }
 }

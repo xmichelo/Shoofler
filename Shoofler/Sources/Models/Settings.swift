@@ -1,31 +1,33 @@
 import Foundation
 import SwiftUI
 
-struct Settings {
-    var theme: Theme = .system
-}
-
 protocol SettingsClientProtocol {
-    func load() async throws -> Settings
-    mutating func save(_ settings:Settings) async throws
+    func load() async throws -> SettingsFeature.State
+    func save(_ settings: SettingsFeature.State) async throws
 }
 
 struct AppStorageSettingsClient: SettingsClientProtocol {
     @AppStorage("theme") private var theme: Theme = .system
-
-    func load() async throws -> Settings {
-        return Settings(theme: theme)
+    @AppStorage("dummy") private var dummy: Bool = false
+    
+    func load() async throws -> SettingsFeature.State {
+        return SettingsFeature.State(
+            theme: theme,
+            dummy: dummy,
+        )
     }
     
-    mutating func save(_ settings: Settings) async throws {
+    func save(_ settings: SettingsFeature.State) async throws {
         theme = settings.theme
+        dummy = settings.dummy
     }
 }
 
 struct NullSettingsClient: SettingsClientProtocol {
-    func load() async throws -> Settings {
-        return Settings()
+    func load() async throws -> SettingsFeature.State {
+        return SettingsFeature.State()
     }
-    mutating func save(_ settings: Settings) async throws {}
+    
+    func save(_ settings: SettingsFeature.State) async throws {}
 }
 
