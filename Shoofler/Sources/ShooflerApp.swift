@@ -24,6 +24,8 @@ struct ShooflerApp: App {
                 }
             }
         }
+        .windowStyle(.automatic)
+        .windowToolbarStyle(.unified)
         
         MenuBarExtra("Shoofler", image: "MenuBarIcon") {
             MenuBarContentView()

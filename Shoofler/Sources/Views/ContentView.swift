@@ -9,7 +9,7 @@ public struct ContentView: View {
     public var body: some View {
         VStack {
             if isAccessibilityEnabled {
-                Text("Shoofler")
+                NavigationView()
             } else {
                 AccessibilityRequestView()
             }
@@ -22,5 +22,6 @@ public struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .frame(width: 800, height: 600)
     }
 }

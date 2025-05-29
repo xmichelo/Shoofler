@@ -35,7 +35,7 @@ extension SnippetList {
     ///     - groupID: the group ID.
     ///
     /// - returns: The list of snippets belonging to the group.
-    public func snippetsOf(group groupID: UUID) -> Self {
+    public func snippetsOf(group groupID: UUID) -> SnippetList {
         return self.filter { uuid, snippet in
             return snippet.groupID == groupID
         }

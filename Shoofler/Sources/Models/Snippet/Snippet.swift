@@ -1,7 +1,7 @@
 import Foundation
 
 /// Structure for snippets.
-public struct Snippet: Codable, Identifiable {
+public struct Snippet: Codable, Identifiable, Hashable {
     /// The snippet ID.
     public let id: UUID
     
