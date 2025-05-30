@@ -1,21 +1,8 @@
 import Foundation
 
-public typealias SnippetList = [UUID: Snippet]
+public typealias SnippetList = [Snippet]
 
 extension SnippetList {
-    // MARK: - Initializers
-    
-    /// Initializes a snippet list from an array of snippets.
-    ///
-    /// if a duplicate ID is present, only the last snippet with this ID will be in the returned list.
-    ///
-    /// - parameters:
-    ///     - array: the array of snippets.
-    init(from array: [Snippet]) {
-        self = .init(minimumCapacity: array.count)
-        array.forEach { self[$0.id] = $0 }
-    }
-
     // MARK: - member functions
     
     /// Test whether the list contains a snippets with the given ID.
@@ -26,7 +13,7 @@ extension SnippetList {
     /// - returns:
     ///     - true if and only if the list contains the snippet with the given ID.
     public func contains(id: UUID) -> Bool {
-        return self.keys.contains(id)
+        return self.contains { $0.id == id }
     }
     
     /// Get the snippets belonging to a given group.
@@ -36,9 +23,33 @@ extension SnippetList {
     ///
     /// - returns: The list of snippets belonging to the group.
     public func snippetsOf(group groupID: UUID) -> SnippetList {
-        return self.filter { uuid, snippet in
-            return snippet.groupID == groupID
+        return self.filter { $0.groupID == groupID }
+    }
+
+    /// Return a sanitized version of the list.
+    ///
+    /// Only the first snippet with a given UUID is kept.
+    ///
+    /// - Returns: The sanitized list.
+    public func sanitized() -> SnippetList {
+        var uuids: Set<UUID> = []
+        return self.filter { snippet in
+            if uuids.contains(snippet.id) {
+                return false
+            }
+            uuids.insert(snippet.id)
+            return true
         }
+    }
+    
+    /// Subscript based on snippet ID
+    ///
+    /// - Parameters:
+    ///     - id The ID of the snippet.
+    ///
+    /// - Returns: The first snippet in the list with the given ID.
+    subscript (id: UUID) -> Snippet? {
+        return self.first(where: { $0.id == id })
     }
 }
 
@@ -46,13 +57,11 @@ extension SnippetList {
 
 public extension SnippetList {
     /// A sample list of snippets with no groups.
-    static let sample = SnippetList(
-        from: [
+    static let sample: SnippetList = [
             Snippet(trigger: "!em1", content: "first@example.com", description: "First email address"),
             Snippet(trigger: "!em2", content: "second@example.com", description: "Second email address"),
             Snippet(trigger: "!em3", content: "third@example.com", description: "Third email address"),
             Snippet(trigger: "!em4", content: "fourth@example.com", description: "Fourth email address"),
             Snippet(trigger: "!em5", content: "fifth@example.com", description: "Fifth email address"),
         ]
-    )
 }

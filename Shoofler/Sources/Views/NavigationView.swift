@@ -58,7 +58,7 @@ struct SnippetListView: View {
     @State var searchText: String = ""
     
     var body: some View {
-        List(Array(vault.snippets.snippetsOf(group: group?.id ?? UUID()).values).sorted(by: { $0.trigger < $1.trigger }), selection: $selectedSnippet) { snippet in
+        List(vault.snippets.snippetsOf(group: group?.id ?? UUID()), selection: $selectedSnippet) { snippet in
             NavigationLink(value: snippet) {
                 Text(snippet.trigger)
             }

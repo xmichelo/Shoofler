@@ -4,7 +4,7 @@ import Testing
 @testable import Shoofler
 
 let testSnippets = SnippetList(
-    from: [
+    [
         Snippet(trigger: "zz0", content: "This is snippet #0", description: "A test snippet at index 0", group: testGroupIDs[0]),
         Snippet(trigger: "zz1", content: "This is snippet #1", description: "A test snippet at index 1", group: testGroupIDs[0]),
         Snippet(trigger: "zz2", content: "This is snippet #2", description: "A test snippet at index 2", group: testGroupIDs[0]),
@@ -20,25 +20,41 @@ let testSnippets = SnippetList(
 let testVault = Vault(groups: testGroups, snippets: testSnippets)
 
 struct SnippetListTests {
-    @Test("SnipperList(from:)")
-    func testSnippetListFromArray() {
-        #expect(testSnippets.count == 9)
-        #expect(SnippetList(from: []).count == 0)
-        
+    @Test("SnippetList[id:]")
+    func testSnippetListSubscriptId() async throws {
         let uuid = UUID()
-        let snippets = [
+        let snippetList: SnippetList = [
             Snippet(id: uuid, trigger: "trigger1", content: "snippet1"),
             Snippet(trigger: "trigger2", content: "snippet2"),
             Snippet(id: uuid, trigger: "trigger3", content: "snippet3"),
         ]
-        let snippetList = SnippetList(from: snippets)
-        #expect(snippetList.count == 2)
-        #expect(snippetList[uuid]?.trigger == "trigger3")
+        #expect(snippetList.count == 3)
+        #expect(snippetList[uuid]?.trigger == "trigger1")
+        #expect(snippetList[UUID()] == nil)
+    }
+    
+    @Test("SnippetList.sanitize()")
+    func testSnippetListSanitize() async throws {
+        let uuid1 = UUID()
+        let uuid2 = UUID()
+        let snippetList: SnippetList = SnippetList([
+            Snippet(id: uuid1, trigger: "trigger1", content: "snippet1"),
+            Snippet(trigger: "trigger2", content: "snippet2"),
+            Snippet(id: uuid2, trigger: "trigger3", content: "snippet3"),
+            Snippet(id: uuid1, trigger: "trigger4", content: "snippet4"),
+            Snippet(id: uuid1, trigger: "trigger5", content: "snippet5"),
+            Snippet(id: uuid2, trigger: "trigger6", content: "snippet6"),
+        ]).sanitized()
+        
+        #expect(snippetList.count == 3)
+        #expect(snippetList[uuid1]?.trigger == "trigger1")
+        #expect(snippetList[uuid2]?.trigger == "trigger3")
+        #expect(snippetList[UUID()] == nil)
     }
     
     @Test("SnippetList.contains(id:)")
     func testSnippetListContainsID() async throws {
-        testSnippets.forEach { _, snippet in
+        testSnippets.forEach {snippet in
             #expect(testSnippets.contains(id: snippet.id))
 
         }

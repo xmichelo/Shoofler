@@ -17,7 +17,7 @@ struct Vault: Codable {
         
         // we assigned groups, except to the first item.
         var i = 0
-        let filtered = vault.snippets.map { _, snippet in
+        vault.snippets = vault.snippets.map { snippet in
             var snippet = snippet
             let groupIDs = Array(vault.groups.keys)
             snippet.groupID = i != 0 ? groupIDs[i % groupIDs.count] : nil
@@ -25,7 +25,6 @@ struct Vault: Codable {
             return snippet
         }
         
-        vault.snippets = SnippetList(from: filtered)
         return vault
     }
 }
