@@ -27,7 +27,7 @@ struct GroupListView: View {
     var vault: Vault
     @Binding var selectedGroup: Group?
     var body: some View {
-        List(Array(vault.groups.values), selection: $selectedGroup) { group in
+        List(vault.groups, selection: $selectedGroup) { group in
             NavigationLink(value: group) {
                 Label(group.name, systemImage: "folder")
             }

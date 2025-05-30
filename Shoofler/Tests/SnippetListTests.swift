@@ -33,6 +33,21 @@ struct SnippetListTests {
         #expect(snippetList[UUID()] == nil)
     }
     
+    @Test("SnippetList.addReplace(snippet")
+    func testSnippetListAddReplace() async throws {
+        var snippetList: SnippetList = []
+        snippetList.appendReplace(testSnippets[0])
+        #expect(snippetList.count == 1)
+        snippetList.appendReplace(testSnippets[1])
+        #expect(snippetList.count == 2)
+        snippetList.appendReplace(testSnippets[0])
+        #expect(snippetList.count == 2)
+        snippetList.appendReplace(testSnippets[2])
+        snippetList.appendReplace(testSnippets[2])
+        snippetList.appendReplace(testSnippets[2])
+        #expect(snippetList.count == 3)
+    }
+    
     @Test("SnippetList.sanitize()")
     func testSnippetListSanitize() async throws {
         let uuid1 = UUID()

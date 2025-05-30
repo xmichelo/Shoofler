@@ -19,8 +19,7 @@ struct Vault: Codable {
         var i = 0
         vault.snippets = vault.snippets.map { snippet in
             var snippet = snippet
-            let groupIDs = Array(vault.groups.keys)
-            snippet.groupID = i != 0 ? groupIDs[i % groupIDs.count] : nil
+            snippet.groupID = i != 0 ? vault.groups[i % vault.groups.count].id : nil
             i += 1
             return snippet
         }
