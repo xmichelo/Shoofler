@@ -8,6 +8,14 @@ struct Vault: Codable {
     /// The list of snippets.
     var snippets: SnippetList
     
+    func snippetsOf(group groupID: UUID) -> SnippetList {
+        return snippets.snippetsOf(group: groupID)
+    }
+}
+
+extension Vault {
+    // MARK: - Sample data
+
     /// A sample vault.
     static var sample: Vault {
         var vault = Vault(groups: .sample, snippets: .sample)
