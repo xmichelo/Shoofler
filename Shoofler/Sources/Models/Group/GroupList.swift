@@ -7,8 +7,8 @@ public extension GroupList {
     
     /// A sample group list.
     static let sample: GroupList = [
-        Group(id: UUID(), name: "First Group", description: "First group"),
-        Group(id: UUID(), name: "Second Group", description: "Second group"),
-        Group(id: UUID(), name: "Third Group"),
+        Group(id: UUID(), name: "Professional", description: "A group containing Professional snippets."),
+        Group(id: UUID(), name: "Personal", description: "A group with personal snippets."),
+        Group(id: UUID(), name: "Emojis", description: "A group containing emoji related snippets.")
     ]
 }

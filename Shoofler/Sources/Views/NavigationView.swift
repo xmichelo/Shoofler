@@ -9,38 +9,79 @@ struct NavigationView: View {
     var body: some View {
         NavigationSplitView(columnVisibility: $splitViewVisibility) {
             GroupListView(vault: vault, selectedGroup: $selectedGroup)
+                .navigationSplitViewColumnWidth(min: 250, ideal: 350)
         } content: {
+            
             SnippetListView(
                 vault: vault,
                 group: selectedGroup,
                 selectedSnippet: $selectedSnippet
             )
-        } detail: {
+            .navigationSplitViewColumnWidth(min: 250, ideal: 350)
+        }detail: {
             SnippetDetailsView(snippet: selectedSnippet)
+                .navigationSplitViewColumnWidth(min: 250, ideal: 500)
         }
         .navigationSplitViewStyle(.balanced)
-        .navigationTitle("")
+    }
+}
+
+struct GroupItemView: View {
+    let vault: Vault
+    var group: Group
+    var systemImage: String = "folder"
+
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: "folder")
+                .resizable()
+                .aspectRatio(1.0, contentMode: .fit)
+                .frame(width: 20, height: 20)
+                .foregroundColor(.accentColor)
+            VStack {
+                HStack {
+                    Text(group.name)
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                    Spacer()
+                }
+                HStack {
+                    Text(group.description ?? "")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+            }
+        }
+        .padding(3)
+        .badge(vault.snippets.snippetsOf(group: group.id).count)
     }
 }
 
 struct GroupListView: View {
     var vault: Vault
+    
     @Binding var selectedGroup: Group?
+    @State var searchText: String = ""
+    
     var body: some View {
-        List(vault.groups, selection: $selectedGroup) { group in
-            NavigationLink(value: group) {
-                Label(group.name, systemImage: "folder")
+        VStack {
+            List(vault.groups, selection: $selectedGroup) { group in
+                NavigationLink(value: group) {
+                    GroupItemView(vault: vault, group: group)
+                }
             }
+            .navigationTitle("")
+            .listStyle(SidebarListStyle())
+            
         }
-        .navigationTitle("")
-        .listStyle(SidebarListStyle())
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button(action: {}) {
                     Image(systemName: "plus")
                 }
                 .help("Add Group")
-
+                
                 Button(action: {}) {
                     Image(systemName: "trash")
                 }
@@ -48,6 +89,7 @@ struct GroupListView: View {
                 .help("Remove Group")
             }
         }
+        .searchable(text: $searchText, prompt: "Search Snippets")
     }
 }
 
@@ -55,7 +97,6 @@ struct SnippetListView: View {
     var vault: Vault
     var group: Group?
     @Binding var selectedSnippet: Snippet?
-    @State var searchText: String = ""
     
     var body: some View {
         List(vault.snippets.snippetsOf(group: group?.id ?? UUID()), selection: $selectedSnippet) { snippet in
@@ -63,39 +104,20 @@ struct SnippetListView: View {
                 Text(snippet.trigger)
             }
         }
-        .navigationTitle(group?.name ?? "")
         .toolbar {
-            ToolbarItemGroup(placement: .primaryAction) {
+            ToolbarItemGroup(placement: .automatic) {
                 Button(action: {}) {
                     Image(systemName: "plus")
                 }
                 .help("Add Snippet")
-
+                
                 Button(action: {}) {
                     Image(systemName: "trash")
                 }
                 .help("Delete Snippet")
-
+                
             }
         }
-        .searchable(text: $searchText, prompt: "Search Snippets")
-    }
-}
-
-struct SnippetDetailsView: View {
-    var snippet: Snippet?
-    
-    var body: some View {
-        VStack {
-            if let snippet = snippet {
-                Text(snippet.trigger)
-                Text(snippet.content)
-                Text(snippet.description ?? "")
-            } else {
-                EmptyView()
-            }
-        }
-        .navigationTitle(snippet?.trigger ?? "")
     }
 }
 

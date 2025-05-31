@@ -18,11 +18,11 @@ struct ShooflerApp: App {
         Window("Shoofler", id: ShooflerApp.mainWIndowID) {
             ContentView()
             .preferredColorScheme(store.settings.theme.colorScheme)
-            .onAppear {
-                NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
-                    print(event)
-                }
-            }
+//            .onAppear {
+//                NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
+//                    print(event)
+//                }
+//            }
         }
         .windowStyle(.automatic)
         .windowToolbarStyle(.unified)
