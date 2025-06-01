@@ -4,13 +4,12 @@ import Carbon
 
 @main
 struct ShooflerApp: App {
-    @Bindable var store: StoreOf<ShooflerFeature>
+    @Bindable var store: StoreOf<ShooflerFeature> = Store(initialState: ShooflerFeature.sampleState) { ShooflerFeature() }
     private var monitor: Any?
     
     static let mainWIndowID = "shoofler-main-window"
     
     init() {
-        store = DataStore.shared
         store.scope(state: \.settings, action: \.settings).send(.loadSettings)
     }
     

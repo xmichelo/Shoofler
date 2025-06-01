@@ -3,6 +3,12 @@ import ComposableArchitecture
 
 @Reducer
 struct ShooflerFeature {
+    static let sampleState = State(
+        settings: SettingsFeature.State(),
+        groups: GroupListFeature.State(groups: GroupList.sample),
+        snippets: SnippetListFeature.State(snippets: SnippetList.sample),        
+    )
+    
     @ObservableState
     struct State: Equatable {
         var settings = SettingsFeature.State()

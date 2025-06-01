@@ -1,6 +1,7 @@
 import Foundation
+import ComposableArchitecture
 
-public typealias GroupList = [Group]
+public typealias GroupList = IdentifiedArrayOf<Group>
 
 public extension GroupList {
     // MARK: - Sample data

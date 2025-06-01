@@ -4,7 +4,7 @@ import ComposableArchitecture
 struct GroupListFeature {
     @ObservableState
     struct State: Equatable {
-        var groups: GroupList = GroupList.sample
+        var groups: GroupList = []
     }
     
     enum Action {

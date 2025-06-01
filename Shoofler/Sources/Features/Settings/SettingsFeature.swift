@@ -97,6 +97,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-    let store = DataStore.shared
-    SettingsView(store: store.scope(state: \.settings, action: \.settings))
+    SettingsView(store: Store(initialState: SettingsFeature.State()) { SettingsFeature() })
 }

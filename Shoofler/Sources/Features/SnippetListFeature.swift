@@ -4,7 +4,7 @@ import ComposableArchitecture
 struct SnippetListFeature {
     @ObservableState
     struct State: Equatable {
-        var snippets: SnippetList = SnippetList.sample
+        var snippets: SnippetList = []
     }
     
     enum Action {
