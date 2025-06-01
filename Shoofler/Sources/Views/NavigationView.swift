@@ -2,7 +2,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct NavigationView: View {
-    @Bindable var store: StoreOf<ShooflerFeature>
+    @Bindable var store: StoreOf<VaultFeature>
     @State private var splitViewVisibility = NavigationSplitViewVisibility.all
     
     var body: some View {
@@ -13,7 +13,7 @@ struct NavigationView: View {
             SnippetListView(store: store)
                 .navigationSplitViewColumnWidth(min: 250, ideal: 350)
         }detail: {
-            SnippetDetailsView(snippet: store.state.snippets.selectedSnippet)
+            SnippetDetailsView(snippet: store.selectedSnippet)
                 .navigationSplitViewColumnWidth(min: 250, ideal: 500)
         }
         .navigationSplitViewStyle(.balanced)
@@ -22,8 +22,8 @@ struct NavigationView: View {
 }
 
 #Preview {
-    NavigationView(store: Store(initialState: ShooflerFeature.State()){
-        ShooflerFeature()
+    NavigationView(store: Store(initialState: ShooflerFeature.sampleState.vault){
+        VaultFeature()
     })
     .frame(width: 1000, height: 400)
 }

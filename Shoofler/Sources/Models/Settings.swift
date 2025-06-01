@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-protocol SettingsClientProtocol {
+protocol SettingsClientProtocol: Sendable {
     func load() async throws -> SettingsFeature.State
     func save(_ settings: SettingsFeature.State) async throws
 }

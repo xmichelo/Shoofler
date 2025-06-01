@@ -2,13 +2,13 @@ import SwiftUI
 import ComposableArchitecture
 
 struct SnippetListView: View {
-    @Bindable var store: StoreOf<ShooflerFeature>
+    @Bindable var store: StoreOf<VaultFeature>
     
     var body: some View {
-        if let selectedGroup = store.groups.selectedGroup {
+        if let selectedGroup = store.selectedGroup {
             List(
-                store.snippets.snippets.snippetsOf(group: selectedGroup),
-                selection: $store.snippets.selectedSnippet.sending(\.snippets.snippetSelected)
+                store.snippets.snippetsOf(group: selectedGroup),
+                selection: $store.selectedSnippet.sending(\.snippetSelected)
             ) { snippet in
                 NavigationLink(value: snippet) {
                     SnippetItemView(snippet: snippet)
@@ -19,7 +19,7 @@ struct SnippetListView: View {
                     Button(action: {}) {
                         Image(systemName: "square.and.pencil")
                     }
-                    .disabled(store.snippets.selectedSnippet == nil)
+                    .disabled(store.selectedSnippet == nil)
                     .help("Edit Snippet")
                     
                     Button(action: {}) {
@@ -30,7 +30,7 @@ struct SnippetListView: View {
                     Button(action: {}) {
                         Image(systemName: "trash")
                     }
-                    .disabled(store.snippets.selectedSnippet == nil)
+                    .disabled(store.selectedSnippet == nil)
                     .help("Delete Snippet")
                 }
             }
@@ -40,6 +40,8 @@ struct SnippetListView: View {
 
 #Preview {
     SnippetListView(
-        store: Store(initialState: ShooflerFeature.sampleState) { ShooflerFeature() }
+        store: Store(initialState: ShooflerFeature.sampleState.vault) {
+            VaultFeature()
+        }
     )
 }

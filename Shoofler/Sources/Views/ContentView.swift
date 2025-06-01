@@ -2,7 +2,7 @@ import SwiftUI
 import ComposableArchitecture
 
 public struct ContentView: View {
-    @Bindable var store: StoreOf<ShooflerFeature>
+    @Bindable var store: StoreOf<VaultFeature>
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var isAccessibilityEnabled = AXIsProcessTrusted()
     
@@ -21,8 +21,8 @@ public struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(store: Store(initialState: ShooflerFeature.State(), reducer: {
-            ShooflerFeature()
+        ContentView(store: Store(initialState: ShooflerFeature.sampleState.vault, reducer: {
+            VaultFeature()
         }))
         .frame(width: 800, height: 600)
     }

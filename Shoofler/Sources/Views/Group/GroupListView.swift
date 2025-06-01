@@ -2,17 +2,17 @@ import ComposableArchitecture
 import SwiftUI
 
 struct GroupListView: View {
-    @Bindable var store: StoreOf<ShooflerFeature>
+    @Bindable var store: StoreOf<VaultFeature>
     
     @State var searchText: String = ""
     
     func badgeValue(for group: Group) -> Int {
-        return store.snippets.snippets.snippetsOf(group: group).count
+        return store.snippets.snippetsOf(group: group).count
     }
     
     var body: some View {
         VStack {
-            List(store.groups.groups, selection: $store.groups.selectedGroup.sending(\.groups.groupSelected)) { group in
+            List(store.groups, selection: $store.selectedGroup.sending(\.groupSelected)) { group in
                 NavigationLink(value: group) {
                     GroupItemView(
                         group: group,
@@ -28,7 +28,7 @@ struct GroupListView: View {
                 Button(action: {}) {
                     Image(systemName: "square.and.pencil")
                 }
-                .disabled(store.groups.selectedGroup == nil)
+                .disabled(store.selectedGroup == nil)
                 .help("Edit Group")
 
                 Button(action: {}) {
@@ -39,7 +39,7 @@ struct GroupListView: View {
                 Button(action: {}) {
                     Image(systemName: "trash")
                 }
-                .disabled(store.groups.selectedGroup == nil)
+                .disabled(store.selectedGroup == nil)
                 .help("Remove Group")
             }
         }
@@ -49,6 +49,6 @@ struct GroupListView: View {
 
 #Preview {
     GroupListView(
-        store: Store(initialState: ShooflerFeature.State()) { ShooflerFeature() },
+        store: Store(initialState: ShooflerFeature.sampleState.vault) { VaultFeature() },
     )
 }

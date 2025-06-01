@@ -2,7 +2,7 @@ import ComposableArchitecture
 import SwiftUI
 
 @Reducer
-struct SettingsFeature {
+struct SettingsFeature: Sendable {
     @ObservableState
     struct State: Equatable {
         var theme: Theme = .system

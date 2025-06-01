@@ -3,23 +3,21 @@ import ComposableArchitecture
 
 @Reducer
 struct ShooflerFeature {
-    static let sampleState = State(
+    @MainActor static let sampleState = State(
         settings: SettingsFeature.State(),
-        groups: GroupListFeature.State(groups: GroupList.sample),
-        snippets: SnippetListFeature.State(snippets: SnippetList.sample),        
+        vault: VaultFeature.State(groups: GroupList.sample, snippets: SnippetList.sample)
     )
     
     @ObservableState
     struct State: Equatable {
         var settings = SettingsFeature.State()
-        var groups = GroupListFeature.State()
-        var snippets = SnippetListFeature.State()
+        var vault = VaultFeature.State()
+
     }
     
     enum Action {
         case settings(SettingsFeature.Action)
-        case groups(GroupListFeature.Action)
-        case snippets(SnippetListFeature.Action)
+        case vault(VaultFeature.Action)
     }
     
     var body: some ReducerOf<Self> {
@@ -27,12 +25,8 @@ struct ShooflerFeature {
             SettingsFeature()
         }
         
-        Scope(state: \.groups, action: \.groups) {
-            GroupListFeature()
-        }
-        
-        Scope(state: \.snippets, action: \.snippets) {
-            SnippetListFeature()
+        Scope(state: \.vault, action: \.vault) {
+            VaultFeature()
         }
         
         Reduce { state, action in

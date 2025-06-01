@@ -1,4 +1,5 @@
 import SwiftUI
+@preconcurrency import ApplicationServices
 
 struct AccessibilityRequestView: View {
     

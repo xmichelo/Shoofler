@@ -23,7 +23,7 @@ public extension SnippetList {
     // MARK: - Sample data
     
     /// A sample list of snippets with no groups.
-    static let sample: SnippetList = [
+    @MainActor static let sample: SnippetList = [
         Snippet(id: UUID(0), trigger: "!em0", content: "address1@example.com", description: "Email address at position 0", group: UUID(0)),
         Snippet(id: UUID(1), trigger: "!em1", content: "address1@example.com", description: "Email address at position 1", group: UUID(0)),
         Snippet(id: UUID(2), trigger: "!em2", content: "address1@example.com", description: "Email address at position 2", group: UUID(1)),

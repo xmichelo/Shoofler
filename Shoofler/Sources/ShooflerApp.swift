@@ -17,7 +17,7 @@ struct ShooflerApp: App {
         var accum: String = ""
         
         Window("Shoofler", id: ShooflerApp.mainWIndowID) {
-            ContentView(store: store)
+            ContentView(store: store.scope(state: \.vault, action: \.vault))
             .preferredColorScheme(store.settings.theme.colorScheme)
             .onAppear {
                 NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
