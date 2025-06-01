@@ -47,6 +47,6 @@ struct SnippetDetailsView: View {
 }
 
 #Preview {
-    SnippetDetailsView(snippet: Vault.sample.snippets.first)
+    SnippetDetailsView(snippet: SnippetList.sample.first)
 }
 

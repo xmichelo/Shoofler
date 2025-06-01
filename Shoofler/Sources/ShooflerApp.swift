@@ -4,7 +4,7 @@ import Carbon
 
 @main
 struct ShooflerApp: App {
-    @Bindable var store: StoreOf<AppFeature>
+    @Bindable var store: StoreOf<ShooflerFeature>
     private var monitor: Any?
     
     static let mainWIndowID = "shoofler-main-window"
@@ -18,7 +18,7 @@ struct ShooflerApp: App {
         var accum: String = ""
         
         Window("Shoofler", id: ShooflerApp.mainWIndowID) {
-            ContentView()
+            ContentView(store: store)
             .preferredColorScheme(store.settings.theme.colorScheme)
             .onAppear {
                 NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in

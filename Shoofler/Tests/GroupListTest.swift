@@ -26,8 +26,8 @@ struct GroupListTests {
     
     @Test("GroupList.contains(id:)")
     func testGroupListContainsID() {
-        for id in testGroupIDs {
-            #expect(testGroups.contains(id: id))
+        for id in 0..<testGroups.count {
+            #expect(testGroups.contains(id: UUID(id)))
         }
         #expect(!testGroups.contains(id: UUID()))
     }

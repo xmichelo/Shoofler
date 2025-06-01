@@ -2,8 +2,8 @@ import ComposableArchitecture
 
 class DataStore {
     static let shared = Store(
-        initialState: AppFeature.State()
+        initialState: ShooflerFeature.State()
     ) {
-        AppFeature()
+        ShooflerFeature()
     }
 }

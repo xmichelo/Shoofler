@@ -1,19 +1,20 @@
 import SwiftUI
+import ComposableArchitecture
 
 struct NavigationView: View {
-    @State private var vault = Vault.sample
+    let store: StoreOf<ShooflerFeature>
     @State private var selectedGroup: Group?
     @State private var selectedSnippet: Snippet?
     @State private var splitViewVisibility = NavigationSplitViewVisibility.all
     
     var body: some View {
         NavigationSplitView(columnVisibility: $splitViewVisibility) {
-            GroupListView(vault: vault, selectedGroup: $selectedGroup)
+            GroupListView(store: store, selectedGroup: $selectedGroup)
                 .navigationSplitViewColumnWidth(min: 250, ideal: 350)
         } content: {
             
             SnippetListView(
-                vault: vault,
+                store: store.scope(state: \.snippets, action: \.snippets),
                 group: selectedGroup,
                 selectedSnippet: $selectedSnippet
             )
@@ -27,7 +28,7 @@ struct NavigationView: View {
 }
 
 struct GroupItemView: View {
-    let vault: Vault
+    let store: StoreOf<ShooflerFeature>
     var group: Group
     var systemImage: String = "folder"
 
@@ -54,21 +55,21 @@ struct GroupItemView: View {
             }
         }
         .padding(3)
-        .badge(vault.snippets.snippetsOf(group: group.id).count)
+        .badge(store.snippets.snippets.snippetsOf(group: group.id).count)
     }
 }
 
 struct GroupListView: View {
-    var vault: Vault
+    let store: StoreOf<ShooflerFeature>
     
     @Binding var selectedGroup: Group?
     @State var searchText: String = ""
     
     var body: some View {
         VStack {
-            List(vault.groups, selection: $selectedGroup) { group in
+            List(store.groups.groups, selection: $selectedGroup) { group in
                 NavigationLink(value: group) {
-                    GroupItemView(vault: vault, group: group)
+                    GroupItemView(store: store, group: group)
                 }
             }
             .navigationTitle("")
@@ -94,12 +95,12 @@ struct GroupListView: View {
 }
 
 struct SnippetListView: View {
-    var vault: Vault
+    let store: StoreOf<SnippetListFeature>
     var group: Group?
     @Binding var selectedSnippet: Snippet?
     
     var body: some View {
-        List(vault.snippets.snippetsOf(group: group?.id ?? UUID()), selection: $selectedSnippet) { snippet in
+        List(store.snippets.snippetsOf(group: group?.id ?? UUID()), selection: $selectedSnippet) { snippet in
             NavigationLink(value: snippet) {
                 Text(snippet.trigger)
             }
@@ -122,6 +123,8 @@ struct SnippetListView: View {
 }
 
 #Preview {
-    NavigationView()
-        .frame(width: 1000, height: 400)
+    NavigationView(store: Store(initialState: ShooflerFeature.State()){
+        ShooflerFeature()
+    })
+    .frame(width: 1000, height: 400)
 }

@@ -5,7 +5,7 @@ public typealias SnippetList = [Snippet]
 
 public extension SnippetList {
     // MARK: - member functions
-
+    
     /// Get the snippets belonging to a given group.
     ///
     /// - parameters:
@@ -19,13 +19,18 @@ public extension SnippetList {
 
 public extension SnippetList {
     // MARK: - Sample data
-
+    
     /// A sample list of snippets with no groups.
     static let sample: SnippetList = [
-            Snippet(trigger: "!em1", content: "first@example.com", description: "First email address"),
-            Snippet(trigger: "!em2", content: "second@example.com", description: "Second email address"),
-            Snippet(trigger: "!em3", content: "third@example.com", description: "Third email address"),
-            Snippet(trigger: "!em4", content: "fourth@example.com", description: "Fourth email address"),
-            Snippet(trigger: "!em5", content: "fifth@example.com", description: "Fifth email address"),
-        ]
+        Snippet(id: UUID(0), trigger: "!em0", content: "address1@example.com", description: "Email address at position 0", group: UUID(0)),
+        Snippet(id: UUID(1), trigger: "!em1", content: "address1@example.com", description: "Email address at position 1", group: UUID(0)),
+        Snippet(id: UUID(2), trigger: "!em2", content: "address1@example.com", description: "Email address at position 2", group: UUID(1)),
+        Snippet(id: UUID(3), trigger: "!em3", content: "address1@example.com", description: "Email address at position 3", group: UUID(2)),
+        Snippet(id: UUID(4), trigger: "!em4", content: "address1@example.com", description: "Email address at position 4", group: UUID(2)),
+        Snippet(id: UUID(5), trigger: "!em5", content: "address1@example.com", description: "Email address at position 5", group: UUID(0)),
+        Snippet(id: UUID(6), trigger: "!em6", content: "address1@example.com", description: "Email address at position 6", group: UUID(0)),
+        Snippet(id: UUID(7), trigger: "!em7", content: "address1@example.com", description: "Email address at position 7", group: UUID(0)),
+        Snippet(id: UUID(8), trigger: "!em8", content: "address1@example.com", description: "Email address at position 8", group: UUID(0)),
+        Snippet(id: UUID(9), trigger: "!em9", content: "address1@example.com", description: "Email address at position 9", group: nil),
+    ]
 }
