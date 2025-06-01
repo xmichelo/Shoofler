@@ -2,7 +2,7 @@ import SwiftUI
 import ComposableArchitecture
 
 public struct ContentView: View {
-    let store: StoreOf<ShooflerFeature>
+    @Bindable var store: StoreOf<ShooflerFeature>
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var isAccessibilityEnabled = AXIsProcessTrusted()
     

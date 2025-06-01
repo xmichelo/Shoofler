@@ -5,16 +5,18 @@ struct GroupListFeature {
     @ObservableState
     struct State: Equatable {
         var groups: GroupList = []
+        var selectedGroup: Group?
     }
     
     enum Action {
-        case dummy
+        case groupSelected(Group?)
     }
     
     var body: some ReducerOf<Self> {
-        Reduce { _, action in
+        Reduce { state, action in
             switch action {
-            case .dummy:
+            case .groupSelected(let group):
+                state.selectedGroup = group
                 return .none
             }
         }

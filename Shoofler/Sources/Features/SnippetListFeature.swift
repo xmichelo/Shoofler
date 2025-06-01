@@ -5,16 +5,18 @@ struct SnippetListFeature {
     @ObservableState
     struct State: Equatable {
         var snippets: SnippetList = []
+        var selectedSnippet: Snippet?
     }
     
     enum Action {
-        case dummy
+        case snippetSelected(Snippet?)
     }
     
     var body: some ReducerOf<Self> {
-        Reduce { _, action in
+        Reduce { state, action in
             switch action {
-            case .dummy:
+            case .snippetSelected(let snippet):
+                state.selectedSnippet = snippet
                 return .none
             }
         }

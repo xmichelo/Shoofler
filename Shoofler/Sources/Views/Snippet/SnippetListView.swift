@@ -2,34 +2,37 @@ import SwiftUI
 import ComposableArchitecture
 
 struct SnippetListView: View {
-    let store: StoreOf<SnippetListFeature>
-    var group: Group?
-    @Binding var selectedSnippet: Snippet?
+    @Bindable var store: StoreOf<ShooflerFeature>
     
     var body: some View {
-        List(store.snippets.snippetsOf(group: group?.id ?? UUID()), selection: $selectedSnippet) { snippet in
-            NavigationLink(value: snippet) {
-                SnippetItemView(snippet: snippet)
+        if let selectedGroup = store.groups.selectedGroup {
+            List(
+                store.snippets.snippets.snippetsOf(group: selectedGroup),
+                selection: $store.snippets.selectedSnippet.sending(\.snippets.snippetSelected)
+            ) { snippet in
+                NavigationLink(value: snippet) {
+                    SnippetItemView(snippet: snippet)
+                }
             }
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .automatic) {
-                Button(action: {}) {
-                    Image(systemName: "square.and.pencil")
+            .toolbar {
+                ToolbarItemGroup(placement: .automatic) {
+                    Button(action: {}) {
+                        Image(systemName: "square.and.pencil")
+                    }
+                    .disabled(store.snippets.selectedSnippet == nil)
+                    .help("Edit Snippet")
+                    
+                    Button(action: {}) {
+                        Image(systemName: "plus")
+                    }
+                    .help("Add Snippet")
+                    
+                    Button(action: {}) {
+                        Image(systemName: "trash")
+                    }
+                    .disabled(store.snippets.selectedSnippet == nil)
+                    .help("Delete Snippet")
                 }
-                .disabled(selectedSnippet == nil)
-                .help("Edit Snippet")
-
-                Button(action: {}) {
-                    Image(systemName: "plus")
-                }
-                .help("Add Snippet")
-                
-                Button(action: {}) {
-                    Image(systemName: "trash")
-                }
-                .disabled(selectedSnippet == nil)
-                .help("Delete Snippet")                
             }
         }
     }
@@ -37,9 +40,6 @@ struct SnippetListView: View {
 
 #Preview {
     SnippetListView(
-        store: Store(initialState: SnippetListFeature.State(), reducer: {
-            SnippetListFeature()
-        }),
-        group: GroupList.sample.first,
-        selectedSnippet: .constant(nil))
+        store: Store(initialState: ShooflerFeature.sampleState) { ShooflerFeature() }
+    )
 }

@@ -2,18 +2,21 @@ import ComposableArchitecture
 import SwiftUI
 
 struct GroupListView: View {
-    let store: StoreOf<ShooflerFeature>
+    @Bindable var store: StoreOf<ShooflerFeature>
     
-    @Binding var selectedGroup: Group?
     @State var searchText: String = ""
+    
+    func badgeValue(for group: Group) -> Int {
+        return store.snippets.snippets.snippetsOf(group: group).count
+    }
     
     var body: some View {
         VStack {
-            List(store.groups.groups, selection: $selectedGroup) { group in
+            List(store.groups.groups, selection: $store.groups.selectedGroup.sending(\.groups.groupSelected)) { group in
                 NavigationLink(value: group) {
                     GroupItemView(
                         group: group,
-                        badgeValue: store.snippets.snippets.snippetsOf(group: group.id).count)
+                        badgeValue: badgeValue(for: group))
                 }
             }
             .navigationTitle("")
@@ -25,7 +28,7 @@ struct GroupListView: View {
                 Button(action: {}) {
                     Image(systemName: "square.and.pencil")
                 }
-                .disabled(selectedGroup == nil)
+                .disabled(store.groups.selectedGroup == nil)
                 .help("Edit Group")
 
                 Button(action: {}) {
@@ -36,7 +39,7 @@ struct GroupListView: View {
                 Button(action: {}) {
                     Image(systemName: "trash")
                 }
-                .disabled(selectedGroup == nil)
+                .disabled(store.groups.selectedGroup == nil)
                 .help("Remove Group")
             }
         }
@@ -47,6 +50,5 @@ struct GroupListView: View {
 #Preview {
     GroupListView(
         store: Store(initialState: ShooflerFeature.State()) { ShooflerFeature() },
-        selectedGroup: .constant(nil)
     )
 }
