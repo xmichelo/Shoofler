@@ -2,6 +2,7 @@ import Foundation
 
 public typealias SnippetList = [Snippet]
 
+let lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 
 public extension SnippetList {
     // MARK: - member functions
@@ -31,6 +32,6 @@ public extension SnippetList {
         Snippet(id: UUID(6), trigger: "!em6", content: "address1@example.com", description: "Email address at position 6", group: UUID(0)),
         Snippet(id: UUID(7), trigger: "!em7", content: "address1@example.com", description: "Email address at position 7", group: UUID(0)),
         Snippet(id: UUID(8), trigger: "!em8", content: "address1@example.com", description: "Email address at position 8", group: UUID(0)),
-        Snippet(id: UUID(9), trigger: "!em9", content: "address1@example.com", description: "Email address at position 9", group: nil),
+        Snippet(id: UUID(9), trigger: "zzlorem", content: lorem, description: "Lorem ipsum placeholder", group: UUID(0)),
     ]
 }

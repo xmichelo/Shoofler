@@ -31,7 +31,7 @@ struct SnippetDetailsView: View {
             VStack {
                 if let snippet = snippet {
                     Form {
-                        ReadOnlyTextField(label: "Title", text: snippet.trigger)
+                        ReadOnlyTextField(label: "Trigger", text: snippet.trigger)
                         ReadOnlyTextField(label: "Description", text: snippet.description ?? "")
                         ReadOnlyTextField(label: "Content", text: snippet.content)
                     }
