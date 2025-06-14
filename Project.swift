@@ -7,6 +7,7 @@ let project = Project(
         base: [
             "ENABLE_USER_SCRIPT_SANDBOXING": false,
             "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": true,
+            "SWIFT_VERSION": "6.0"
         ]
     ),
     targets: [
