@@ -40,7 +40,7 @@ struct SnippetListView: View {
 
 #Preview {
     SnippetListView(
-        store: Store(initialState: ShooflerFeature.sampleState.vault) {
+        store: Store(initialState: EngineFeature.sampleState.vault) {
             VaultFeature()
         }
     )

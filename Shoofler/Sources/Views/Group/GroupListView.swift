@@ -49,6 +49,6 @@ struct GroupListView: View {
 
 #Preview {
     GroupListView(
-        store: Store(initialState: ShooflerFeature.sampleState.vault) { VaultFeature() },
+        store: Store(initialState: EngineFeature.sampleState.vault) { VaultFeature() },
     )
 }

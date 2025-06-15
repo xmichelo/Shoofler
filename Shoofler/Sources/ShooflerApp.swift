@@ -11,13 +11,13 @@ struct ShooflerApp: App {
     
     init() {
         store.scope(state: \.settings, action: \.settings).send(.loadSettings)
-        let inputStore = store.scope(state: \.input, action: \.input)
+        let inputStore = store.scope(state: \.engine.input, action: \.engine.input)
         inputStore.send(.installKeyboardMonitor(inputStore))
     }
     
     var body: some Scene {
         Window("Shoofler", id: ShooflerApp.mainWIndowID) {
-            ContentView(store: store.scope(state: \.vault, action: \.vault))
+            ContentView(store: store.scope(state: \.engine.vault, action: \.engine.vault))
             .preferredColorScheme(store.settings.theme.colorScheme)
         }
         .windowStyle(.automatic)

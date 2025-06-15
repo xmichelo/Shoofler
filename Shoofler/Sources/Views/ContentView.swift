@@ -21,7 +21,7 @@ public struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(store: Store(initialState: ShooflerFeature.sampleState.vault, reducer: {
+        ContentView(store: Store(initialState: EngineFeature.sampleState.vault, reducer: {
             VaultFeature()
         }))
         .frame(width: 800, height: 600)

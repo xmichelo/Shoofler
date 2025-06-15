@@ -4,7 +4,9 @@ import AppKit
 @Reducer
 struct SubstituterFeature {
     @ObservableState
-    struct State: Equatable {}
+    struct State: Equatable {
+        var dummy: Bool = false
+    }
     
     enum Action {
         case performSubstitution(Substitution)

@@ -22,7 +22,7 @@ struct NavigationView: View {
 }
 
 #Preview {
-    NavigationView(store: Store(initialState: ShooflerFeature.sampleState.vault){
+    NavigationView(store: Store(initialState: EngineFeature.sampleState.vault){
         VaultFeature()
     })
     .frame(width: 1000, height: 400)
