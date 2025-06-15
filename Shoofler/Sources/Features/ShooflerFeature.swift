@@ -6,7 +6,8 @@ struct ShooflerFeature {
     @MainActor static let sampleState = State(
         settings: SettingsFeature.State(),
         vault: VaultFeature.State(groups: GroupList.sample, snippets: SnippetList.sample),
-        input: InputFeature.State()
+        input: InputFeature.State(),
+        substituter: SubstituterFeature.State(),
     )
     
     @ObservableState
@@ -14,6 +15,7 @@ struct ShooflerFeature {
         var settings = SettingsFeature.State()
         var vault = VaultFeature.State()
         var input = InputFeature.State()
+        var substituter = SubstituterFeature.State()
 
     }
     
@@ -21,6 +23,7 @@ struct ShooflerFeature {
         case settings(SettingsFeature.Action)
         case vault(VaultFeature.Action)
         case input(InputFeature.Action)
+        case substituter(SubstituterFeature.Action)
     }
     
     var body: some ReducerOf<Self> {
@@ -36,8 +39,27 @@ struct ShooflerFeature {
             InputFeature()
         }
         
+        Scope(state: \.substituter, action: \.substituter) {
+            SubstituterFeature()
+        }
+        
         Reduce { state, action in
-            return .none
+            switch action {
+            case .input(.accumulatorChanged(let accum)):
+                print("accum is: \(accum)")
+                if accum == "xxem" {
+                    print("Performing substitution")
+                    let subst = Substitution(eraseCount: 4, newText: "xavier@michelon.ch")
+                    return .send(.substituter(.performSubstitution(subst)))
+                }
+                return .none
+                
+            case .substituter(.substitutionWasPerformed):
+                return .send(.input(.resetAccumulator))
+                
+            default:
+                return .none
+            }
         }
     }
 }

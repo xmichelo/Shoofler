@@ -3,25 +3,36 @@ import Carbon
 import AppKit
 import ComposableArchitecture
 
-struct KeyEvent: Sendable {
-    
-    var characters: String?
-
-    static func from(nsEvent: NSEvent) -> Self {
-        return Self(characters: nsEvent.characters)
-    }
-}
-
+/// The input feature is in charge of keyboard monitoring and event processing.
 @Reducer
 struct InputFeature {
+    /// Resetters are key that will cause the  accumulator to be reset.
+    static let resetters = [
+        kVK_Escape,
+        kVK_Space,
+        kVK_Return,
+        kVK_Tab,
+        kVK_UpArrow,
+        kVK_DownArrow,
+        kVK_LeftArrow,
+        kVK_RightArrow,
+        kVK_Home,
+        kVK_End,
+        kVK_PageUp,
+        kVK_PageDown,
+        kVK_ForwardDelete,
+    ]
+    
     @ObservableState
     struct State: Equatable {
-        var acummulator: String = ""
+        var accumulator: String = ""
     }
     
     enum Action {
         case installKeyboardMonitor(StoreOf<InputFeature>)
         case keyPressed(KeyEvent)
+        case accumulatorChanged(String)
+        case resetAccumulator
     }
     
     var body: some ReducerOf<Self> {
@@ -39,79 +50,53 @@ struct InputFeature {
                         }
                     }
                 }
+                
             case .keyPressed(let event):
-                if let chars = event.characters {
-                    if !chars.isEmpty {
-                        print(chars)
-                    }
+                return processKey(state: &state, event: event)
+                
+            case .accumulatorChanged(_):
+                return .none
+                
+            case .resetAccumulator:
+                if !state.accumulator.isEmpty {
+                    state.accumulator = ""
+                    return .send(.accumulatorChanged(""));
                 }
-                return .none;
+                return .none
             }
         }
     }
-}
+    
+    /// Process a key event.
+    ///
+    /// - Parameters:
+    ///     - state: the state of the feature.
+    ///     - event: the event.
+    ///
+    /// - Returns: the effect resulting from the processing.
+    func processKey(state: inout State, event: KeyEvent) -> Effect<InputFeature.Action> {
+        if event.modifierFlags.contains(.command) {
+            return .send(.resetAccumulator)
+        }
+        
+        if InputFeature.resetters.contains(event.keyCode) {
+            return .send(.resetAccumulator)
+        }
+        
+        if event.keyCode == kVK_Delete {
+            if (!state.accumulator.isEmpty) {
+                state.accumulator.removeLast()
+                return .send(.accumulatorChanged(state.accumulator))
+            }
+            return .none
+        }
 
-// func installKeyboardMonitor(state) {
-//        NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
-//
-//            //print(event)
-//            let resetters = [
-//                kVK_Escape,
-//                kVK_Space,
-//                kVK_Return,
-//                kVK_Tab,
-//                kVK_UpArrow,
-//                kVK_DownArrow,
-//                kVK_LeftArrow,
-//                kVK_RightArrow,
-//                kVK_Home,
-//                kVK_End,
-//                kVK_PageUp,
-//                kVK_PageDown,
-//                kVK_ForwardDelete,
-//            ]
-//
-//            let intCode = Int(event.keyCode)
-//
-//            if resetters.contains(intCode) {
-//                print("Resetting accumulator")
-////                accum = ""
-//                return
-//            }
-//
-//            if intCode == kVK_Delete {
-//                if (!accum.isEmpty) {
-//                    accum.removeLast()
-//                }
-//                print("Delete. Accum is now \(accum)")
-//                return
-//            }
-//
-//            if let chars = event.characters {
-//                if !chars.isEmpty {
-//                    accum += chars
-//                }
-//            }
-//
-//            if accum == "lorem" {
-//                print("I should print lorem")
-//                let pasteboard = NSPasteboard.general
-//                pasteboard.clearContents()
-//                pasteboard.setString("lorem ipsum", forType: .string)
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-//                    let source = CGEventSource(stateID: .hidSystemState)
-//                    let backspaceDown = CGEvent(keyboardEventSource: source, virtualKey: 0x33, keyDown: true)
-//                    let backspaceUp = CGEvent(keyboardEventSource: source, virtualKey: 0x33, keyDown: false)
-//                    let keyDown = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: true)
-//                    let keyUp = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: false)
-//
-//                    keyDown?.flags = .maskCommand
-//                    keyUp?.flags = .maskCommand
-//                    for _ in 0..<accum.count {
-//                        backspaceDown?.post(tap: .cghidEventTap)
-//                        backspaceUp?.post(tap: .cghidEventTap)
-//                    }
-//                    keyDown?.post(tap: .cghidEventTap)
-//                    keyUp?.post(tap: .cghidEventTap)
-//                }
-//            }
+        guard let chars = event.characters else { return .none }
+        if !chars.isEmpty {
+            state.accumulator.append(chars);
+            return .send(.accumulatorChanged(state.accumulator));
+        }
+        
+        return .none
+    }
+}
