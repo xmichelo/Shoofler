@@ -14,6 +14,8 @@ struct VaultFeature {
     enum Action {
         case groupSelected(Group?)
         case snippetSelected(Snippet?)
+        case checkForMatch(String)
+        case snippetHasMatched(Snippet)
     }
     
     var body: some ReducerOf<Self> {
@@ -23,8 +25,17 @@ struct VaultFeature {
                 state.selectedGroup = group
                 state.selectedSnippet = nil
                 return .none
+                
             case .snippetSelected(let snippet):
                 state.selectedSnippet = snippet
+                return .none
+                
+            case .checkForMatch(let trigger):
+                let snippet = state.snippets.first { trigger.hasSuffix($0.trigger) }
+                guard let snippet = snippet else { return .none }
+                return .send(.snippetHasMatched(snippet))
+                
+            case .snippetHasMatched(_):
                 return .none
             }
         }

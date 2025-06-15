@@ -38,15 +38,20 @@ struct EngineFeature {
             switch action {
             case .input(.accumulatorChanged(let accum)):
                 print("accum is: \(accum)")
-                if accum == "xxem" {
-                    print("Performing substitution")
-                    let subst = Substitution(eraseCount: 4, newText: "xavier@michelon.ch")
-                    return .send(.substituter(.performSubstitution(subst)))
-                }
-                return .none
+                return .send(.vault(.checkForMatch(accum)))
                 
             case .substituter(.substitutionWasPerformed):
                 return .send(.input(.resetAccumulator))
+            
+            case .vault(.snippetHasMatched(let snippet)):
+                print("snippet was triggered: \(snippet.trigger)")
+                return .send(
+                    .substituter(
+                        .performSubstitution(
+                            Substitution(eraseCount: snippet.trigger.count, newText: snippet.content)
+                        )
+                    )
+                )
                 
             default:
                 return .none
