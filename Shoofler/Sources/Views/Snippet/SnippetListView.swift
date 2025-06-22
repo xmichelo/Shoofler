@@ -16,18 +16,22 @@ struct SnippetListView: View {
             }
             .toolbar {
                 ToolbarItemGroup(placement: .automatic) {
-                    Button(action: {}) {
+                    Button {
+                        store.send(.editSnippetActionTriggered)
+                    } label: {
                         Image(systemName: "square.and.pencil")
                     }
                     .disabled(store.selectedSnippet == nil)
                     .help("Edit Snippet")
                     
-                    Button(action: {}) {
+                    Button {
+                        store.send(.addSnippetActionTriggered)
+                    } label: {
                         Image(systemName: "plus")
                     }
                     .help("Add Snippet")
                     
-                    Button(action: {}) {
+                    Button{} label: {
                         Image(systemName: "trash")
                     }
                     .disabled(store.selectedSnippet == nil)

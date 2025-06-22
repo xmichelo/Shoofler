@@ -18,6 +18,11 @@ struct NavigationView: View {
         }
         .navigationSplitViewStyle(.balanced)
         .navigationTitle("")
+        .sheet(item: $store.scope(state: \.addEditSnippet, action: \.addEditSnippet)) { addEditSnippetStore in
+            NavigationStack {
+                AddEditSnippetView(store: addEditSnippetStore)
+            }
+        }
     }
 }
 

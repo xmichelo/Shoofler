@@ -3,6 +3,8 @@ import ComposableArchitecture
 
 public typealias GroupList = IdentifiedArrayOf<Group>
 
+extension GroupList: Sendable {}
+
 public extension GroupList {
     // MARK: - Sample data
     
