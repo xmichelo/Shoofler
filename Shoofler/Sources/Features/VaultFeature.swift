@@ -10,8 +10,9 @@ struct VaultFeature {
         var selectedGroup: Group?
         var selectedSnippet: Snippet?
         
-        @Presents var addEditSnippet: AddEditSnippetFeature.State? = nil
-
+        @Presents var addEditSnippet: AddEditSnippetFeature.State?
+        @Presents var alert: AlertState<Action.Alert>?
+        
         static func == (lhs: VaultFeature.State, rhs: VaultFeature.State) -> Bool {
             return lhs.groups == rhs.groups &&
                 lhs.snippets == rhs.snippets &&
@@ -25,10 +26,15 @@ struct VaultFeature {
         case snippetSelected(Snippet?)
         case addSnippetActionTriggered
         case editSnippetActionTriggered
+        case deleteSnippetActionTriggered(id: Snippet.ID)
         case checkForMatch(String)
         case snippetHasMatched(Snippet)
-        
+        case alert(PresentationAction<Alert>)
         case addEditSnippet(PresentationAction<AddEditSnippetFeature.Action>)
+        
+        enum Alert: Equatable {
+            case confirmSnippetDeletion(id: Snippet.ID)
+        }
     }
     
     var body: some ReducerOf<Self> {
@@ -52,6 +58,16 @@ struct VaultFeature {
                 guard let snippet = state.selectedSnippet else { return .none }
                 state.addEditSnippet = AddEditSnippetFeature.State(snippet: snippet)
                 return .none
+
+            case let .deleteSnippetActionTriggered(id: id):
+                state.alert = AlertState {
+                    TextState("Are you sure you want to delete this snippet?")
+                } actions: {
+                    ButtonState(role: .destructive, action: .confirmSnippetDeletion(id: id)) {
+                        TextState("Delete")
+                    }
+                }
+                return .none
                 
             case .checkForMatch(let trigger):
                 let snippet = state.snippets.first { trigger.hasSuffix($0.trigger) }
@@ -66,6 +82,13 @@ struct VaultFeature {
                 state.selectedSnippet = snippet
                 return .none
                 
+            case let .alert(.presented(.confirmSnippetDeletion(id: id))):
+                state.snippets.remove(id: id)
+                return .none
+                
+            case .alert:
+                return .none
+                
             case .addEditSnippet:
                 return .none
             }
@@ -73,5 +96,6 @@ struct VaultFeature {
         .ifLet(\.$addEditSnippet, action: \.addEditSnippet) {
             AddEditSnippetFeature()
         }
+        .ifLet(\.alert, action: \.alert)
     }
 }

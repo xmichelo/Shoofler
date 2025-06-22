@@ -23,6 +23,7 @@ struct NavigationView: View {
                 AddEditSnippetView(store: addEditSnippetStore)
             }
         }
+        .alert($store.scope(state: \.alert, action: \.alert))
     }
 }
 

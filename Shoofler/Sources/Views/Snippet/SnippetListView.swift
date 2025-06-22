@@ -31,7 +31,10 @@ struct SnippetListView: View {
                     }
                     .help("Add Snippet")
                     
-                    Button{} label: {
+                    Button{
+                        guard let snippet = store.selectedSnippet else { return }
+                        store.send(.deleteSnippetActionTriggered(id: snippet.id))
+                    } label: {
                         Image(systemName: "trash")
                     }
                     .disabled(store.selectedSnippet == nil)
