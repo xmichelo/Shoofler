@@ -4,7 +4,7 @@ import Carbon
 
 @main
 struct ShooflerApp: App {
-    @Bindable var store: StoreOf<ShooflerFeature> = Store(initialState: ShooflerFeature.sampleState) { ShooflerFeature() }
+    @Bindable var store: StoreOf<ShooflerFeature> = Store(initialState: ShooflerFeature.State()) { ShooflerFeature() }
     private var monitor: Any?
     
     static let mainWIndowID = "shoofler-main-window"

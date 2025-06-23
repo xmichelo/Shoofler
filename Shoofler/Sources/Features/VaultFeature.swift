@@ -5,8 +5,8 @@ import ComposableArchitecture
 struct VaultFeature {
     @ObservableState
     struct State: Equatable {
-        var groups: GroupList = []
-        var snippets: SnippetList = []
+        @Shared(.groups) var groups: GroupList = []
+        @Shared(.snippets) var snippets: SnippetList = []
         var selectedGroup: Group?
         var selectedSnippet: Snippet?
         
@@ -66,7 +66,7 @@ struct VaultFeature {
                 return .none
 
             case .addEditSnippet(.presented(.delegate(.saveSnippet(let snippet)))):
-                state.snippets.updateOrAppend(snippet)
+                _ = state.$snippets.withLock{ $0.updateOrAppend(snippet) }
                 state.selectedSnippet = snippet
                 return .none
 
@@ -74,7 +74,7 @@ struct VaultFeature {
                 return .none
 
             case let .alert(.presented(.confirmSnippetDeletion(id: id))):
-                state.snippets.remove(id: id)
+                _ = state.$snippets.withLock { $0.remove(id: id) }
                 return .none
 
             case let .deleteSnippetActionTriggered(id: id):
@@ -98,7 +98,7 @@ struct VaultFeature {
                 return .none
 
             case .addEditGroup(.presented(.delegate(.saveGroup(let group)))):
-                state.groups.updateOrAppend(group)
+                _ = state.$groups.withLock { $0.updateOrAppend(group) }
                 state.selectedGroup = group
                 return .none
                 
@@ -106,7 +106,7 @@ struct VaultFeature {
                 return .none
 
             case let .alert(.presented(.confirmGroupDeletion(id: id))):
-                state.groups.remove(id: id)
+                _ = state.$groups.withLock { $0.remove(id: id) }
                 return .none
 
             case let .deleteGroupActionTriggered(id: id):
@@ -140,5 +140,17 @@ struct VaultFeature {
             AddEditGroupFeature()
         }
         .ifLet(\.alert, action: \.alert)
+    }
+}
+
+extension SharedKey where Self == FileStorageKey<SnippetList>.Default {
+    static var snippets: Self {
+        Self[.fileStorage(.documentsDirectory.appending(component: "snippets.json")), default: []]
+    }
+}
+
+extension SharedKey where Self == FileStorageKey<GroupList>.Default {
+    static var groups: Self {
+        Self[.fileStorage(.documentsDirectory.appending(component: "groups.json")), default: []]
     }
 }
