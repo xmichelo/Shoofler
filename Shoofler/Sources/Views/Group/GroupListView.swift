@@ -21,22 +21,29 @@ struct GroupListView: View {
             }
             .navigationTitle("")
             .listStyle(SidebarListStyle())
-            
         }
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
-                Button(action: {}) {
+                Button {
+                    store.send(.editGroupActionTriggered)
+                } label: {
                     Image(systemName: "square.and.pencil")
                 }
                 .disabled(store.selectedGroup == nil)
                 .help("Edit Group")
 
-                Button(action: {}) {
+                Button {
+                    store.send(.addGroupActionTriggered)
+                } label: {
                     Image(systemName: "plus")
                 }
                 .help("Add Group")
                 
-                Button(action: {}) {
+                Button {
+                    if let group = store.selectedGroup {
+                        store.send(.deleteGroupActionTriggered(id: group.id))
+                    }
+                } label: {
                     Image(systemName: "trash")
                 }
                 .disabled(store.selectedGroup == nil)

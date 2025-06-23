@@ -11,6 +11,7 @@ struct VaultFeature {
         var selectedSnippet: Snippet?
         
         @Presents var addEditSnippet: AddEditSnippetFeature.State?
+        @Presents var addEditGroup: AddEditGroupFeature.State?
         @Presents var alert: AlertState<Action.Alert>?
         
         static func == (lhs: VaultFeature.State, rhs: VaultFeature.State) -> Bool {
@@ -26,14 +27,19 @@ struct VaultFeature {
         case snippetSelected(Snippet?)
         case addSnippetActionTriggered
         case editSnippetActionTriggered
+        case addEditSnippet(PresentationAction<AddEditSnippetFeature.Action>)
         case deleteSnippetActionTriggered(id: Snippet.ID)
+        case addGroupActionTriggered
+        case editGroupActionTriggered
+        case addEditGroup(PresentationAction<AddEditGroupFeature.Action>)
+        case deleteGroupActionTriggered(id: Group.ID)
         case checkForMatch(String)
         case snippetHasMatched(Snippet)
         case alert(PresentationAction<Alert>)
-        case addEditSnippet(PresentationAction<AddEditSnippetFeature.Action>)
-        
+
         enum Alert: Equatable {
             case confirmSnippetDeletion(id: Snippet.ID)
+            case confirmGroupDeletion(id: Group.ID)
         }
     }
     
@@ -59,11 +65,55 @@ struct VaultFeature {
                 state.addEditSnippet = AddEditSnippetFeature.State(snippet: snippet)
                 return .none
 
+            case .addEditSnippet(.presented(.delegate(.saveSnippet(let snippet)))):
+                state.snippets.updateOrAppend(snippet)
+                state.selectedSnippet = snippet
+                return .none
+
+            case .addEditSnippet:
+                return .none
+
+            case let .alert(.presented(.confirmSnippetDeletion(id: id))):
+                state.snippets.remove(id: id)
+                return .none
+
             case let .deleteSnippetActionTriggered(id: id):
                 state.alert = AlertState {
                     TextState("Are you sure you want to delete this snippet?")
                 } actions: {
                     ButtonState(role: .destructive, action: .confirmSnippetDeletion(id: id)) {
+                        TextState("Delete")
+                    }
+                }
+                return .none
+                
+            case .addGroupActionTriggered:
+                let group = Group(name: "")
+                state.addEditGroup = AddEditGroupFeature.State(group: group)
+                return .none
+                
+            case .editGroupActionTriggered:
+                guard let group = state.selectedGroup else { return .none }
+                state.addEditGroup = AddEditGroupFeature.State(group: group)
+                return .none
+
+            case .addEditGroup(.presented(.delegate(.saveGroup(let group)))):
+                state.groups.updateOrAppend(group)
+                state.selectedGroup = group
+                return .none
+                
+            case .addEditGroup:
+                return .none
+
+            case let .alert(.presented(.confirmGroupDeletion(id: id))):
+                state.groups.remove(id: id)
+                return .none
+
+            case let .deleteGroupActionTriggered(id: id):
+                state.alert = AlertState {
+                    TextState("Are you sure you want to delete this group?")
+                } actions: {
+                    ButtonState(role: .destructive, action: .confirmGroupDeletion(id: id)) {
                         TextState("Delete")
                     }
                 }
@@ -77,24 +127,17 @@ struct VaultFeature {
             case .snippetHasMatched(_):
                 return .none
              
-            case .addEditSnippet(.presented(.delegate(.saveSnippet(let snippet)))):
-                state.snippets.updateOrAppend(snippet)
-                state.selectedSnippet = snippet
-                return .none
-                
-            case let .alert(.presented(.confirmSnippetDeletion(id: id))):
-                state.snippets.remove(id: id)
-                return .none
                 
             case .alert:
                 return .none
                 
-            case .addEditSnippet:
-                return .none
             }
         }
         .ifLet(\.$addEditSnippet, action: \.addEditSnippet) {
             AddEditSnippetFeature()
+        }
+        .ifLet(\.$addEditGroup, action: \.addEditGroup) {
+            AddEditGroupFeature()
         }
         .ifLet(\.alert, action: \.alert)
     }

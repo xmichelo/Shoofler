@@ -1,7 +1,7 @@
 import Foundation
 
 /// A structure representing a snippet group
-public struct Group: Codable, Identifiable, Hashable {
+public struct Group: Codable, Identifiable, Hashable, Sendable {
     /// The ID of the group.
     public var id: UUID
     

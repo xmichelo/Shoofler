@@ -23,6 +23,11 @@ struct NavigationView: View {
                 AddEditSnippetView(store: addEditSnippetStore)
             }
         }
+        .sheet(item: $store.scope(state: \.addEditGroup, action: \.addEditGroup)) { addEditGroupStore in
+            NavigationStack {
+                AddEditGroupView(store: addEditGroupStore)
+            }
+        }
         .alert($store.scope(state: \.alert, action: \.alert))
     }
 }
