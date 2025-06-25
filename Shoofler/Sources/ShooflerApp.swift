@@ -5,8 +5,8 @@ import Carbon
 @main
 struct ShooflerApp: App {
     @Bindable var store: StoreOf<ShooflerFeature> = Store(initialState: ShooflerFeature.State()) { ShooflerFeature() }
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     private var monitor: Any?
-    
     static let mainWIndowID = "shoofler-main-window"
     
     init() {
@@ -31,3 +31,24 @@ struct ShooflerApp: App {
     }
 }
 
+/// Delegate class to handle app events.
+class AppDelegate: NSObject, NSApplicationDelegate {
+    /// Callback triggered when the application is about to become active.
+    ///
+    /// - Parameters:
+    ///    - notification: the event data
+    func applicationWillBecomeActive(_ notification: Notification) {
+        NSApp.setActivationPolicy(.regular) // Show the Dock icon.
+    }
+
+    /// Callback triggered when the last application window is closed.
+    ///
+    /// - Parameters:
+    ///    - sender: the application object
+    ///
+    /// - Returns: true if and only if the application should close.
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        NSApp.setActivationPolicy(.accessory) // Hide the Dock icon.
+        return false
+    }
+}

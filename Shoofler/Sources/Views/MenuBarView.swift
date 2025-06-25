@@ -5,8 +5,8 @@ struct MenuBarContentView: View {
     
     var body: some View {
         Button("Open Shoofler") {
-            NSApp.activate(ignoringOtherApps: true)
             openWindow(id: ShooflerApp.mainWIndowID)
+            NSApp.activate(ignoringOtherApps: true)
         }
         .keyboardShortcut("\n", modifiers: [])
         
