@@ -143,14 +143,20 @@ struct VaultFeature {
     }
 }
 
+extension URL {
+    static var shooflerConfigurationDirectory: URL {
+        return .applicationSupportDirectory.appending(component: "Shoofler",directoryHint: .isDirectory)
+    }
+}
+
 extension SharedKey where Self == FileStorageKey<SnippetList>.Default {
     static var snippets: Self {
-        Self[.fileStorage(.documentsDirectory.appending(component: "snippets.json")), default: []]
+        Self[.fileStorage(.shooflerConfigurationDirectory.appending(component: "snippets.json")), default: []]
     }
 }
 
 extension SharedKey where Self == FileStorageKey<GroupList>.Default {
     static var groups: Self {
-        Self[.fileStorage(.documentsDirectory.appending(component: "groups.json")), default: []]
+        Self[.fileStorage(.shooflerConfigurationDirectory.appending(component: "groups.json")), default: []]
     }
 }
