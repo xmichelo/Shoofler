@@ -3,7 +3,6 @@ import SwiftUI
 
 struct GroupListView: View {
     @Bindable var store: StoreOf<VaultFeature>
-    
     @State var searchText: String = ""
     
     func badgeValue(for group: Group) -> Int {
@@ -18,6 +17,13 @@ struct GroupListView: View {
                         group: group,
                         badgeValue: badgeValue(for: group))
                 }
+                .dropDestination(for: Snippet.self) { snippets, location in
+                    for snippet in snippets {
+                        store.send(.snippetDroppedOnGroup((snippet, group.id)))
+                    }
+                    return true
+                }
+
             }
             .navigationTitle("")
             .listStyle(SidebarListStyle())

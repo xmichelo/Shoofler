@@ -16,13 +16,7 @@ let project = Project(
             destinations: .macOS,
             product: .app,
             bundleId: "app.shoofler.Shoofler",
-            infoPlist: .extendingDefault(with: [
-                "CFBundleDisplayName": "$(PRODUCT_NAME)",
-                "CFBundleName": "$(PRODUCT_NAME)",
-                "CFBundleShortVersionString": "0.1.0",
-                "CFBundleVersion": "4",
-                "LSApplicationCategoryType": "public.app-category.productivity",
-            ]),
+            infoPlist: shooflerPList(),
             sources: ["Shoofler/Sources/**"],
             resources: ["Shoofler/Resources/**"],
             dependencies: [
@@ -72,6 +66,27 @@ extension Dictionary where Key == String, Value == ProjectDescription.SettingVal
             .codeSignIdentity("Apple Development")
             .merging(["ENABLE_HARDENED_RUNTIME": "YES"])
     }
-
 }
 
+func shooflerPList() -> InfoPlist {
+    return InfoPlist.extendingDefault(
+        with: [
+            "CFBundleDisplayName": "$(PRODUCT_NAME)",
+            "CFBundleName": "$(PRODUCT_NAME)",
+            "CFBundleShortVersionString": "0.1.0",
+            "CFBundleVersion": "4",
+            "LSApplicationCategoryType": "public.app-category.productivity",
+            "UTExportedTypeDeclarations": [
+                [
+                    "UTTypeIdentifier": "app.shoofler.Snippet",
+                    "UTTypeDescription": "Shoofler Snippet",
+                    "UTTypeTagSpecification": [
+                        "public.filename-extension": [".snippet"],
+                        "public.mime-type": ["application/x-shoofler-snippet"]
+                    ],
+                    "UTTypeConformsTo": ["public.json"]
+                ]
+            ]
+        ]
+    )
+}

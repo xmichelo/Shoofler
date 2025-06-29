@@ -10,9 +10,16 @@ struct SnippetListView: View {
                 store.snippets.snippetsOf(group: selectedGroup),
                 selection: $store.selectedSnippet.sending(\.snippetSelected)
             ) { snippet in
-                NavigationLink(value: snippet) {
-                    SnippetItemView(snippet: snippet)
-                }
+                DraggableSnippetItemView(snippet: snippet, selected: store.selectedSnippet == snippet)
+                    .contentShape(Rectangle())
+                    .onTapGesture(count: 2) {
+                        print("snippet double tapped: \(snippet.trigger)")
+                        store.send(.snippetDoubleClicked(snippet))
+                    }
+                    .onTapGesture(count: 1) {
+                        print("snippet tapped: \(snippet.trigger)")
+                        store.send(.snippetSelected(snippet))
+                    }
             }
             .toolbar {
                 ToolbarItemGroup(placement: .automatic) {

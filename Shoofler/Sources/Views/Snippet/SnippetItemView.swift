@@ -3,6 +3,7 @@ import ComposableArchitecture
 
 struct SnippetItemView: View {
     let snippet: Snippet
+    let selected: Bool
     
     var body: some View {
         HStack(spacing: 16) {
@@ -30,13 +31,33 @@ struct SnippetItemView: View {
                     Spacer()
                 }
             }
-            .padding(3)
         }
+        .padding(6)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(selected ? Color.accentColor: .clear)
+                .opacity(selected ? 0.5: 0)
+        )
+    }
+}
+
+struct DraggableSnippetItemView: View {
+    let snippet: Snippet
+    let selected: Bool
+    
+    var body: some View {
+        SnippetItemView(snippet: snippet, selected: selected)
+            .draggable(snippet) {
+                SnippetItemView(snippet: snippet, selected: false).opacity(0.8)
+            }
+            .onDrag {
+                return NSItemProvider(object: snippet.trigger as NSString)
+            }
     }
 }
 
 #Preview {
-    SnippetItemView(snippet: SnippetList.sample.last!)
+    DraggableSnippetItemView(snippet: SnippetList.sample.last!, selected: false)
         .frame(minWidth: 200)
         .padding()
 }

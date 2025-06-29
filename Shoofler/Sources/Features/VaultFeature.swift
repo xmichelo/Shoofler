@@ -1,5 +1,6 @@
 import Foundation
 import ComposableArchitecture
+import SwiftUI
 
 @Reducer
 struct VaultFeature {
@@ -9,7 +10,7 @@ struct VaultFeature {
         @Shared(.snippets) var snippets: SnippetList = []
         var selectedGroup: Group?
         var selectedSnippet: Snippet?
-        
+
         @Presents var addEditSnippet: AddEditSnippetFeature.State?
         @Presents var addEditGroup: AddEditGroupFeature.State?
         @Presents var alert: AlertState<Action.Alert>?
@@ -23,8 +24,10 @@ struct VaultFeature {
     }
     
     enum Action {
+        case snippetDroppedOnGroup((Snippet, Group.ID))
         case groupSelected(Group?)
         case snippetSelected(Snippet?)
+        case snippetDoubleClicked(Snippet)
         case addSnippetActionTriggered
         case editSnippetActionTriggered
         case addEditSnippet(PresentationAction<AddEditSnippetFeature.Action>)
@@ -46,6 +49,12 @@ struct VaultFeature {
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
+            case .snippetDroppedOnGroup((let snippet, let groupID)):
+                _ = state.$snippets.withLock { snippets in
+                    snippets[id: snippet.id]?.groupID = groupID
+                }
+                return .none
+                
             case .groupSelected(let group):
                 state.selectedGroup = group
                 state.selectedSnippet = nil
@@ -54,6 +63,12 @@ struct VaultFeature {
             case .snippetSelected(let snippet):
                 state.selectedSnippet = snippet
                 return .none
+            
+            case .snippetDoubleClicked(let snippet):
+                return .concatenate(
+                    .send(.snippetSelected(snippet)),
+                    .send(.editSnippetActionTriggered)
+                )
                 
             case .addSnippetActionTriggered:
                 let snippet = Snippet(trigger: "", content: "", group: state.selectedGroup?.id)
@@ -159,4 +174,42 @@ extension SharedKey where Self == FileStorageKey<GroupList>.Default {
     static var groups: Self {
         Self[.fileStorage(.shooflerConfigurationDirectory.appending(component: "groups.json")), default: []]
     }
+}
+
+struct NavigationView: View {
+    @Bindable var store: StoreOf<VaultFeature>
+    @State private var splitViewVisibility = NavigationSplitViewVisibility.all
+    
+    var body: some View {
+        NavigationSplitView(columnVisibility: $splitViewVisibility) {
+            GroupListView(store: store)
+                .navigationSplitViewColumnWidth(min: 250, ideal: 350)
+        } content: {
+            SnippetListView(store: store)
+                .navigationSplitViewColumnWidth(min: 250, ideal: 350)
+        }detail: {
+            SnippetDetailsView(snippet: store.selectedSnippet)
+                .navigationSplitViewColumnWidth(min: 250, ideal: 500)
+        }
+        .navigationSplitViewStyle(.balanced)
+        .navigationTitle("")
+        .sheet(item: $store.scope(state: \.addEditSnippet, action: \.addEditSnippet)) { addEditSnippetStore in
+            NavigationStack {
+                AddEditSnippetView(store: addEditSnippetStore)
+            }
+        }
+        .sheet(item: $store.scope(state: \.addEditGroup, action: \.addEditGroup)) { addEditGroupStore in
+            NavigationStack {
+                AddEditGroupView(store: addEditGroupStore)
+            }
+        }
+        .alert($store.scope(state: \.alert, action: \.alert))
+    }
+}
+
+#Preview {
+    NavigationView(store: Store(initialState: EngineFeature.sampleState.vault){
+        VaultFeature()
+    })
+    .frame(width: 1000, height: 400)
 }

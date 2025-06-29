@@ -1,7 +1,9 @@
 import Foundation
+import SwiftUI
+import UniformTypeIdentifiers
 
 /// Structure for snippets.
-public struct Snippet: Codable, Identifiable, Hashable, Sendable {
+public struct Snippet: Equatable, Codable, Identifiable, Hashable, Sendable {
     /// The snippet ID.
     public let id: UUID
     
@@ -31,5 +33,20 @@ public struct Snippet: Codable, Identifiable, Hashable, Sendable {
         self.content = content
         self.description = description
         self.groupID = group
+    }
+}
+
+// Implement Uniform Type Identifier for Transferable
+extension UTType {
+    static var snippet: UTType { UTType(exportedAs: "app.shoofler.Snippet") }
+}
+
+// Implementing Transferable is required to implement Drag & Drop.
+extension Snippet: Transferable {
+    public static var transferRepresentation: some TransferRepresentation {
+        CodableRepresentation(contentType: .snippet)
+        ProxyRepresentation { (snippet: Snippet) in
+            snippet.trigger
+        }
     }
 }
