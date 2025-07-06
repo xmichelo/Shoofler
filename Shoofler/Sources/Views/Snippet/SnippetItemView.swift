@@ -36,7 +36,7 @@ struct SnippetItemView: View {
         .background(
             RoundedRectangle(cornerRadius: 8)
                 .fill(selected ? Color.accentColor: .clear)
-                .opacity(selected ? 0.5: 0)
+                .opacity(selected ? 0.8: 0)
         )
     }
 }

@@ -24,8 +24,9 @@ struct VaultFeature {
     }
     
     enum Action {
-        case snippetDroppedOnGroup((Snippet, Group.ID))
         case groupSelected(Group?)
+        case snippetDroppedOnGroup((Snippet, Group.ID))
+        case snippetDroppedOnSnippet((Snippet, Snippet.ID))
         case snippetSelected(Snippet?)
         case snippetDoubleClicked(Snippet)
         case addSnippetActionTriggered
@@ -52,6 +53,26 @@ struct VaultFeature {
             case .snippetDroppedOnGroup((let snippet, let groupID)):
                 _ = state.$snippets.withLock { snippets in
                     snippets[id: snippet.id]?.groupID = groupID
+                }
+                return .none
+                
+            case .snippetDroppedOnSnippet((let snippet, let targetSnippetID)):
+                withAnimation(.spring(duration: 6.0)) {
+                    state.$snippets.withLock { snippets in
+                        guard
+                            let srcIndex = snippets.index(id: snippet.id),
+                            let dstIndex = snippets.index(id: targetSnippetID)
+                        else {
+                            return
+                        }
+                        let indexSet = IndexSet(integer: srcIndex)
+                        snippets.move(fromOffsets: indexSet,
+                                      toOffset:dstIndex
+                        )
+                        //                        fr: IndexSet(integer: srcIndex),
+                        //                        toOffset: IndexSet(dstIndex
+                        //                    )
+                    }
                 }
                 return .none
                 

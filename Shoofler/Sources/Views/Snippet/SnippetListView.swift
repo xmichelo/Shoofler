@@ -12,13 +12,23 @@ struct SnippetListView: View {
             ) { snippet in
                 DraggableSnippetItemView(snippet: snippet, selected: store.selectedSnippet == snippet)
                     .contentShape(Rectangle())
-                    .onTapGesture(count: 2) {
-                        print("snippet double tapped: \(snippet.trigger)")
-                        store.send(.snippetDoubleClicked(snippet))
-                    }
-                    .onTapGesture(count: 1) {
-                        print("snippet tapped: \(snippet.trigger)")
-                        store.send(.snippetSelected(snippet))
+                    .simultaneousGesture(
+                        TapGesture().onEnded { _ in
+                            print("snippet clicked: \(snippet.trigger)")
+                            store.send(.snippetSelected(snippet))
+                        }
+                    )
+                    .simultaneousGesture(
+                        TapGesture(count: 2).onEnded { _ in
+                            print("snippet double clicked: \(snippet.trigger)")
+                            store.send(.snippetDoubleClicked(snippet))
+                        }
+                    )
+                    .dropDestination(for: Snippet.self) { snippets, location in
+                        for droppedSnippet in snippets {
+                            store.send(.snippetDroppedOnSnippet((droppedSnippet, snippet.id)))
+                        }
+                        return true
                     }
             }
             .toolbar {
