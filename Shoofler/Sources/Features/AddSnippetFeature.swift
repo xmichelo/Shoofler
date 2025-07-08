@@ -75,10 +75,11 @@ struct AddEditSnippetView: View {
             Divider().padding([.top, .bottom])
             
             HStack {
-                Text("Content")//.font(.sta)
+                Text("Content")
                 Spacer()
             }
             TextEditor(text: $store.snippet.content.sending(\.setContent))
+                .font(.system(.body, design: .monospaced))
             
             Spacer()
         }

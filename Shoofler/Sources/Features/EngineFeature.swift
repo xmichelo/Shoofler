@@ -48,7 +48,7 @@ struct EngineFeature {
                 return .send(
                     .substituter(
                         .performSubstitution(
-                            Substitution(eraseCount: snippet.trigger.count, newText: snippet.content)
+                            Substitution(eraseCount: snippet.trigger.count, snippet: snippet.content)
                         )
                     )
                 )

@@ -5,7 +5,7 @@ import AppKit
 struct SubstituterFeature {
     @ObservableState
     struct State: Equatable {
-        var dummy: Bool = false
+        @Shared(.snippets) var snippets: SnippetList = []
     }
     
     enum Action {
@@ -17,13 +17,26 @@ struct SubstituterFeature {
         Reduce { state, action in
             switch action {
             case .performSubstitution(let substitution):
+                
                 let pasteboard = NSPasteboard.general
+                let pasteboardContent = pasteboard.string(forType: .string)
+                let str = replaceVariablesIn(
+                    snippet: substitution.snippet,
+                    pasteboardContent: pasteboardContent,
+                    snippetList: state.snippets)
                 pasteboard.clearContents()
-                pasteboard.setString(substitution.newText, forType: .string)
+                pasteboard.setString(str, forType: .string)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     let eventSource = CGEventSource(stateID: .hidSystemState)
                     emulateDeleteKey(repeatCount: substitution.eraseCount, eventSource: eventSource)
                     emulatePaste(eventSource: eventSource);
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        if let pasteboardContent {
+                            pasteboard.setString(pasteboardContent, forType: .string)
+                        } else {
+                            pasteboard.clearContents()
+                        }
+                    }
                 }
                 return .send(.substitutionWasPerformed)
                 
@@ -61,4 +74,17 @@ struct SubstituterFeature {
         keyDown?.post(tap: .cghidEventTap)
         keyUp?.post(tap: .cghidEventTap)
     }
+    
+}
+
+/// Evaluate a snippet by performing substitution of variables.
+///
+/// - Parameters:
+///     - snippet: the snippet.
+///     - pasteboardContent: the string content of the pasteboard before the trigger.
+///     - snippetList: the list of snippets.
+///
+/// - Returns: the snippet with all variable substitution done.
+func replaceVariablesIn(snippet: String, pasteboardContent: String?, snippetList: SnippetList) -> String {
+    return snippet.replacingOccurrences(of: "#{clipboard}", with: pasteboardContent ?? "")
 }
