@@ -74,7 +74,7 @@ func shooflerPList() -> InfoPlist {
             "CFBundleDisplayName": "$(PRODUCT_NAME)",
             "CFBundleName": "$(PRODUCT_NAME)",
             "CFBundleShortVersionString": "0.1.0",
-            "CFBundleVersion": "4",
+            "CFBundleVersion": "5",
             "LSApplicationCategoryType": "public.app-category.productivity",
             "UTExportedTypeDeclarations": [
                 [
