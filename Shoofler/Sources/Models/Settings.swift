@@ -8,18 +8,19 @@ protocol SettingsClientProtocol: Sendable {
 
 struct AppStorageSettingsClient: SettingsClientProtocol {
     @AppStorage("theme") private var theme: Theme = .system
-    @AppStorage("dummy") private var dummy: Bool = false
+    @AppStorage("showWindowOnStartup") private var showWindowOnStartup: Bool = false
     
     func load() async throws -> SettingsFeature.State {
         return SettingsFeature.State(
             theme: theme,
-            dummy: dummy,
+            showWindowOnStartup: showWindowOnStartup
+            
         )
     }
     
     func save(_ settings: SettingsFeature.State) async throws {
         theme = settings.theme
-        dummy = settings.dummy
+        showWindowOnStartup = settings.showWindowOnStartup
     }
 }
 

@@ -6,7 +6,7 @@ struct SettingsFeature: Sendable {
     @ObservableState
     struct State: Equatable {
         var theme: Theme = .system
-        var dummy: Bool = false
+        var showWindowOnStartup: Bool = false
     }
     
     var settingsClient: SettingsClientProtocol = AppStorageSettingsClient()
@@ -16,8 +16,8 @@ struct SettingsFeature: Sendable {
         case saveSettings
         case settingsLoaded(TaskResult<SettingsFeature.State>)
         case settingsSaved(TaskResult<Void>)
+        case showWindowOnStartupToggled(Bool)
         case themeSelected(Theme)
-        case toggledDummy(Bool)
     }
     
     
@@ -50,11 +50,11 @@ struct SettingsFeature: Sendable {
                 return .none
             case .settingsSaved(.failure):
                 return .none
+            case .showWindowOnStartupToggled(let isOn):
+                state.showWindowOnStartup = isOn
+                return .send(.saveSettings)
             case .themeSelected(let theme):
                 state.theme = theme
-                return .send(.saveSettings)
-            case .toggledDummy(let dummy):
-                state.dummy = dummy
                 return .send(.saveSettings)
             }
         }
@@ -68,12 +68,13 @@ struct SettingsView: View {
         TabView {
             Tab("General", systemImage: "slider.horizontal.3") {
                 VStack {
-                    Section("General") {
-                        Toggle("Dummy", isOn: $store.dummy.sending(\.toggledDummy))
-                    }
-                    .padding()
+                    Toggle(
+                        "Show window on startup",
+                        isOn: $store.showWindowOnStartup.sending(\.showWindowOnStartupToggled)
+                    )
                     Spacer()
                 }
+                .padding()
             }
             Tab("Appearance", systemImage: "display") {
                 VStack {
