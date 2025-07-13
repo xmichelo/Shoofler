@@ -38,10 +38,12 @@ struct ShooflerApp: App {
         .windowToolbarStyle(.unified)
         
         MenuBarExtra("Shoofler", image: "MenuBarIcon") {
-            MenuBarContentView()
+            MenuBarContentView(store: store.scope(state: \.menuBar, action: \.menuBar))
         }
         
-        Settings { SettingsView.init(store: store.scope(state: \.settings, action: \.settings)) }
+        Settings {
+            SettingsView.init(store: store.scope(state: \.settings, action: \.settings))
+        }
     }
 }
 

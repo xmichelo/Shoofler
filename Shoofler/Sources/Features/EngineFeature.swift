@@ -37,14 +37,12 @@ struct EngineFeature {
         Reduce { state, action in
             switch action {
             case .input(.accumulatorChanged(let accum)):
-                print("accum is: \(accum)")
                 return .send(.vault(.checkForMatch(accum)))
                 
             case .substituter(.substitutionWasPerformed):
                 return .send(.input(.resetAccumulator))
             
             case .vault(.snippetHasMatched(let snippet)):
-                print("snippet was triggered: \(snippet.trigger)")
                 return .send(
                     .substituter(
                         .performSubstitution(
