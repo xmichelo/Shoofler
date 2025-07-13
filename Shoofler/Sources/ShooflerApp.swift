@@ -32,18 +32,20 @@ struct ShooflerApp: App {
                 .onDisappear() {
                     setDockIconVisibility(visible: false)
                 }
+
         }
         .defaultLaunchBehavior(store.settings.showWindowOnStartup ? .automatic : .suppressed)
         .windowStyle(.automatic)
         .windowToolbarStyle(.unified)
         
         MenuBarExtra("Shoofler", image: "MenuBarIcon") {
-            MenuBarContentView(store: store.scope(state: \.menuBar, action: \.menuBar))
+            MenuBarView(store: store.scope(state: \.uiActions, action: \.uiActions))
         }
         
         Settings {
             SettingsView.init(store: store.scope(state: \.settings, action: \.settings))
         }
+        
     }
 }
 
