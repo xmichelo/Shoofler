@@ -1,6 +1,8 @@
 import ProjectDescription
 import Foundation
 
+let deploymentTargets = DeploymentTargets.macOS("15.0")
+
 let project = Project(
     name: "Shoofler",
     settings: .settings(
@@ -16,6 +18,7 @@ let project = Project(
             destinations: .macOS,
             product: .app,
             bundleId: "app.shoofler.Shoofler",
+            deploymentTargets: deploymentTargets,
             infoPlist: shooflerPList(),
             sources: ["Shoofler/Sources/**"],
             resources: ["Shoofler/Resources/**"],
@@ -31,6 +34,7 @@ let project = Project(
             destinations: .macOS,
             product: .unitTests,
             bundleId: "app.shoofler.ShooflerTests",
+            deploymentTargets: deploymentTargets,
             infoPlist: .default,
             sources: ["Shoofler/Tests/**"],
             resources: [],
@@ -74,8 +78,9 @@ func shooflerPList() -> InfoPlist {
             "CFBundleDisplayName": "$(PRODUCT_NAME)",
             "CFBundleName": "$(PRODUCT_NAME)",
             "CFBundleShortVersionString": "0.1.0",
-            "CFBundleVersion": "5",
+            "CFBundleVersion": "6",
             "LSApplicationCategoryType": "public.app-category.productivity",
+            "LSUIElement": true,
             "UTExportedTypeDeclarations": [
                 [
                     "UTTypeIdentifier": "app.shoofler.Snippet",
