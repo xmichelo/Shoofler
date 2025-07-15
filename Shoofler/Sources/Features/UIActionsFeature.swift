@@ -15,35 +15,39 @@ struct UIActionsFeature {
         case quit
         
         case resetTriggerOpenMainWindow
-        case resetTriggerSettings
+        case resetTriggerOpenSettings
     }
     
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case .openMainWindow:
+                print("UIActionsFeature: .openMainWindow")
                 state.triggerOpenMainWindow = true
                 return .none
-            
+                
             case .openSettings:
+                print("UIActionsFeature: .openSettings")
                 state.triggerOpenSettings = true
                 return .none
-                
+
             case .quit:
+                print("UIActionsFeature: .quit")
                 Task { @MainActor in
                     NSApplication.shared.terminate(self)
                 }
                 return .none
                 
             case .resetTriggerOpenMainWindow:
+                print("UIActionsFeature: .resetTriggerOpenMainWindow")
                 state.triggerOpenMainWindow = false
                 return .none
                 
-            case .resetTriggerSettings:
+            case .resetTriggerOpenSettings:
+                print("UIActionsFeature: .resetTriggerOpenSettings")
                 state.triggerOpenSettings = false
                 return .none
             }
-            
         }
     }
 }
@@ -61,20 +65,16 @@ struct UIActionView: View {
                     print("triggerOpenMainWindow")
                     openWindow(id: ShooflerApp.mainWIndowID)
                     NSApp.activate(ignoringOtherApps: true)
-                    store.send(.resetTriggerOpenMainWindow)
-                } else {
-                    print("resetTriggerOpenMainWindow")
                 }
+                store.send(.resetTriggerOpenMainWindow)
             }
             .onChange(of: store.triggerOpenSettings) {
                 if store.triggerOpenSettings {
                     print("triggerOpenSettings")
                     openSettings()
-                    store.send(.resetTriggerSettings)
-                } else {
-                    print("resetTriggerSettings")
+                    NSApp.activate(ignoringOtherApps: true)
                 }
+                store.send(.resetTriggerOpenSettings)
             }
-
     }
 }

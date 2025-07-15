@@ -11,7 +11,9 @@ struct SettingsFeature: Sendable {
     
     var settingsClient: SettingsClientProtocol = AppStorageSettingsClient()
     
+    
     enum Action {
+        case loadSettingsBlocking
         case loadSettings
         case saveSettings
         case settingsLoaded(TaskResult<SettingsFeature.State>)
@@ -20,10 +22,21 @@ struct SettingsFeature: Sendable {
         case themeSelected(Theme)
     }
     
+    func loadSettings() -> State {
+        do {
+            return try settingsClient.load()
+        } catch {
+            return State()
+        }
+    }
     
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
+            case .loadSettingsBlocking:
+                state = self.loadSettings()
+                return .none
+                
             case .loadSettings:
                 return .run { send in
                     await send(
