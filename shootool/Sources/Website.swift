@@ -5,7 +5,7 @@ extension Shootool {
     struct Website: ParsableCommand {
         /// The configuration for the `website` command.
         static let configuration = CommandConfiguration(
-            abstract: "perform a task related to the Shoofler website.",
+            abstract: "Perform a task related to the Shoofler website.",
             subcommands: [Publish.self]
         )
     }
