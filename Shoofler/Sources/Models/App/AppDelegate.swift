@@ -1,6 +1,8 @@
 import SwiftUI
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+    var reopenCount: Int = 0
+    
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         print("Application did finish launching.")
         if !AXIsProcessTrusted() {
@@ -8,11 +10,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-//    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-//        reopenCount += 1
-//        if reopenCount > 2 { // The first two calls are part of the launch and should be ignored.
-//            AppConfig.shared.store.send(.uiActions(.openMainWindow))
-//        }
-//        return true
-//    }
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        // The first two calls to this function are part of the regular app startup and should be ignored.
+        reopenCount += 1
+        if reopenCount > 2 {
+            print("A re-opening of the application was requested.");
+            AppConfig.shared.store.send(.openMainWindow)
+        } else {
+            print("Ignoring reopen event #\(reopenCount).")
+        }
+        return true
+    }
 }
