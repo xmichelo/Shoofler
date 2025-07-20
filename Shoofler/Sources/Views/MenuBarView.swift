@@ -22,7 +22,5 @@ struct MenuBarView: View {
             store.send(.quit)
         }
         .keyboardShortcut("q", modifiers: .command)
-        
-        UIActionView(store: store)
     }
 }

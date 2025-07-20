@@ -22,13 +22,17 @@ struct UIActionsFeature {
         Reduce { state, action in
             switch action {
             case .openMainWindow:
-                print("UIActionsFeature: .openMainWindow")
-                state.triggerOpenMainWindow = true
+                if !state.triggerOpenMainWindow {
+                    print("UIActionsFeature: .openMainWindow")
+                    state.triggerOpenMainWindow = true
+                }
                 return .none
                 
             case .openSettings:
-                print("UIActionsFeature: .openSettings")
-                state.triggerOpenSettings = true
+                if !state.triggerOpenSettings {
+                    print("UIActionsFeature: .openSettings")
+                    state.triggerOpenSettings = true
+                }
                 return .none
 
             case .quit:
@@ -39,42 +43,19 @@ struct UIActionsFeature {
                 return .none
                 
             case .resetTriggerOpenMainWindow:
-                print("UIActionsFeature: .resetTriggerOpenMainWindow")
-                state.triggerOpenMainWindow = false
+                if state.triggerOpenMainWindow {
+                    print("UIActionsFeature: .resetTriggerOpenMainWindow")
+                    state.triggerOpenMainWindow = false
+                }
                 return .none
                 
             case .resetTriggerOpenSettings:
-                print("UIActionsFeature: .resetTriggerOpenSettings")
-                state.triggerOpenSettings = false
+                if state.triggerOpenSettings {
+                    print("UIActionsFeature: .resetTriggerOpenSettings")
+                    state.triggerOpenSettings = false
+                }
                 return .none
             }
         }
-    }
-}
-
-struct UIActionView: View {
-    @Environment(\.openWindow) private var openWindow
-    @Environment(\.openSettings) private var openSettings
-    
-    var store: StoreOf<UIActionsFeature>
-    
-    var body: some View {
-        EmptyView()
-            .onChange(of: store.triggerOpenMainWindow) {
-                if store.triggerOpenMainWindow {
-                    print("triggerOpenMainWindow")
-                    openWindow(id: ShooflerApp.mainWIndowID)
-                    NSApp.activate(ignoringOtherApps: true)
-                }
-                store.send(.resetTriggerOpenMainWindow)
-            }
-            .onChange(of: store.triggerOpenSettings) {
-                if store.triggerOpenSettings {
-                    print("triggerOpenSettings")
-                    openSettings()
-                    NSApp.activate(ignoringOtherApps: true)
-                }
-                store.send(.resetTriggerOpenSettings)
-            }
     }
 }

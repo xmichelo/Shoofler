@@ -13,6 +13,9 @@ class AppConfig {
 @main
 struct ShooflerApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @Environment(\.openWindow) var openWindow
+    @Environment(\.openSettings) var openSettings
+    
     var store = AppConfig.shared.store
     private var monitor: Any?
     static let mainWIndowID = "shoofler-main-window"
@@ -37,11 +40,33 @@ struct ShooflerApp: App {
         .defaultLaunchBehavior(store.settings.showWindowOnStartup ? .automatic : .suppressed)
         .windowStyle(.automatic)
         .windowToolbarStyle(.unified)
-        
+        .onChange(of: store.scope(state: \.uiActions, action: \.uiActions).triggerOpenMainWindow) {
+            let store = store.scope(state: \.uiActions, action: \.uiActions)
+            if !store.triggerOpenMainWindow {
+                return
+            }
+            print("onChange(of: .triggerOpenMainWindow")
+            openWindow(id: ShooflerApp.mainWIndowID)
+            NSApp.activate(ignoringOtherApps: true)
+            store.send(.resetTriggerOpenMainWindow)
+
+        }
+        .onChange(of: store.scope(state: \.uiActions, action: \.uiActions).triggerOpenSettings) {
+            let store = store.scope(state: \.uiActions, action: \.uiActions)
+            if !store.triggerOpenSettings {
+                return
+            }
+            
+            print("onChange(of: .triggerOpenSettings")
+            openSettings()
+            NSApp.activate(ignoringOtherApps: true)
+            store.send(.resetTriggerOpenSettings)
+        }
+
         MenuBarExtra("Shoofler", image: "MenuBarIcon") {
             MenuBarView(store: store.scope(state: \.uiActions, action: \.uiActions))
         }
-        
+
         Settings {
             SettingsView.init(store: store.scope(state: \.settings, action: \.settings))
         }
@@ -53,11 +78,12 @@ func setDockIconVisibility(visible: Bool) {
     NSApp.setActivationPolicy(visible ? .regular : .accessory)
 }
 
-
 class AppDelegate: NSObject, NSApplicationDelegate {
-    var reopenCount = 0
-
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        print("Application did finish launching.")
+        if !AXIsProcessTrusted() {
+            AppConfig.shared.store.send(.uiActions(.openMainWindow))
+        }
     }
     
 //    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
