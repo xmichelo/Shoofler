@@ -2,7 +2,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct MenuBarView: View {
-    var store: StoreOf<UIActionsFeature>
+    var store: StoreOf<AppFeature>
     
     var body: some View {
         Button("Open Shoofler") {
