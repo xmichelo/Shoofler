@@ -1,12 +1,14 @@
 import SwiftUI
+import ComposableArchitecture
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+    @Dependency(\.appStore) var appStore
     var reopenCount: Int = 0
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         print("Application did finish launching.")
         if !AXIsProcessTrusted() {
-            AppConfig.shared.store.send(.openMainWindow)
+            appStore.send(.openMainWindow)
         }
     }
     
@@ -15,7 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         reopenCount += 1
         if reopenCount > 2 {
             print("A re-opening of the application was requested.");
-            AppConfig.shared.store.send(.openMainWindow)
+            appStore.send(.openMainWindow)
         } else {
             print("Ignoring reopen event #\(reopenCount).")
         }

@@ -2,19 +2,8 @@ import Foundation
 import ComposableArchitecture
 import SwiftUI
 
-@MainActor
-class AppConfig {
-    static let shared = AppConfig()
-    var store: StoreOf<AppFeature> = Store(initialState: AppFeature.State()) { AppFeature() }
-    
-    private init() {}
-}
-
 @Reducer
 struct AppFeature {
-    @MainActor static let sampleState = State(
-        engine: EngineFeature.sampleState,
-    )
     
     @ObservableState
     struct State: Equatable {
@@ -95,21 +84,21 @@ struct ShooflerApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.openWindow) var openWindow
     @Environment(\.openSettings) var openSettings
-    
-    var store = AppConfig.shared.store
+    @Dependency(\.appStore) var appStore
+
     private var monitor: Any?
     static let mainWIndowID = "shoofler-main-window"
     
     init() {
-        store.scope(state: \.settings, action: \.settings).send(.loadSettingsBlocking)
-        let inputStore = store.scope(state: \.engine.input, action: \.engine.input)
+        appStore.scope(state: \.settings, action: \.settings).send(.loadSettingsBlocking)
+        let inputStore = appStore.scope(state: \.engine.input, action: \.engine.input)
         inputStore.send(.installKeyboardMonitor(inputStore))
     }
     
     var body: some Scene {
         Window("Shoofler", id: ShooflerApp.mainWIndowID) {
-            ContentView(store: store.scope(state: \.engine.vault, action: \.engine.vault))
-                .preferredColorScheme(store.settings.theme.colorScheme)
+            ContentView(store: appStore.scope(state: \.engine.vault, action: \.engine.vault))
+                .preferredColorScheme(appStore.settings.theme.colorScheme)
                 .onAppear {
                     setDockIconVisibility(visible: true)
                 }
@@ -117,36 +106,36 @@ struct ShooflerApp: App {
                     setDockIconVisibility(visible: false)
                 }
         }
-        .defaultLaunchBehavior(store.settings.showWindowOnStartup ? .automatic : .suppressed)
+        .defaultLaunchBehavior(appStore.settings.showWindowOnStartup ? .automatic : .suppressed)
         .windowStyle(.automatic)
         .windowToolbarStyle(.unified)
-        .onChange(of: store.triggerOpenMainWindow) {
-            if !store.triggerOpenMainWindow {
+        .onChange(of: appStore.triggerOpenMainWindow) {
+            if !appStore.triggerOpenMainWindow {
                 return
             }
             print("onChange(of: .triggerOpenMainWindow")
             openWindow(id: ShooflerApp.mainWIndowID)
             NSApp.activate(ignoringOtherApps: true)
-            store.send(.resetTriggerOpenMainWindow)
+            appStore.send(.resetTriggerOpenMainWindow)
 
         }
-        .onChange(of: store.triggerOpenSettings) {
-            if !store.triggerOpenSettings {
+        .onChange(of: appStore.triggerOpenSettings) {
+            if !appStore.triggerOpenSettings {
                 return
             }
             
             print("onChange(of: .triggerOpenSettings")
             openSettings()
             NSApp.activate(ignoringOtherApps: true)
-            store.send(.resetTriggerOpenSettings)
+            appStore.send(.resetTriggerOpenSettings)
         }
 
         MenuBarExtra("Shoofler", image: "MenuBarIcon") {
-            MenuBarView(store: store)
+            MenuBarView(store: appStore)
         }
 
         Settings {
-            SettingsView.init(store: store.scope(state: \.settings, action: \.settings))
+            SettingsView.init(store: appStore.scope(state: \.settings, action: \.settings))
         }
     }
 }
