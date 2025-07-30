@@ -1,5 +1,6 @@
 import SwiftUI
 import ComposableArchitecture
+import CocoaLumberjackSwift
 
 struct SnippetListView: View {
     @Bindable var store: StoreOf<VaultFeature>
@@ -14,13 +15,13 @@ struct SnippetListView: View {
                     .contentShape(Rectangle())
                     .simultaneousGesture(
                         TapGesture().onEnded { _ in
-                            print("snippet clicked: \(snippet.trigger)")
+                            DDLogVerbose("Snippet clicked: \(snippet.trigger)")
                             store.send(.snippetSelected(snippet))
                         }
                     )
                     .simultaneousGesture(
                         TapGesture(count: 2).onEnded { _ in
-                            print("snippet double clicked: \(snippet.trigger)")
+                            DDLogVerbose("Snippet double clicked: \(snippet.trigger)")
                             store.send(.snippetDoubleClicked(snippet))
                         }
                     )

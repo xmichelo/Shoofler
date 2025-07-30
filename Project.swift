@@ -24,6 +24,8 @@ let project = Project(
             resources: ["Shoofler/Resources/**"],
             dependencies: [
                 .external(name: "ComposableArchitecture"),
+                .external(name: "CocoaLumberjack"),
+                .external(name: "CocoaLumberjackSwift"),
             ],
             settings: .settings(
                 base: SettingsDictionary().signing()
