@@ -1,6 +1,5 @@
 import SwiftUI
 import ComposableArchitecture
-import CocoaLumberjackSwift
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     @Dependency(\.appStore) var appStore
@@ -9,7 +8,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         setupLogging()
-        DDLogInfo("Shoofler has started.")
+        logInfo("Shoofler has started.")
         if !AXIsProcessTrusted() {
             appStore.send(.openMainWindow)
         }
@@ -19,10 +18,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // The first two calls to this function are part of the regular app startup and should be ignored.
         reopenCount += 1
         if reopenCount > 2 {
-            DDLogDebug("A re-opening of the application was requested.");
+            logDebug("A re-opening of the application was requested.");
             appStore.send(.openMainWindow)
         } else {
-            DDLogVerbose("Ignoring reopen event #\(reopenCount) as part of the regular app startup process.")
+            logVerbose("Ignoring reopen event #\(reopenCount) as part of the regular app startup process.")
         }
         return true
     }

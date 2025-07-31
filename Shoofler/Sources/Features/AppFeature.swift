@@ -1,7 +1,6 @@
 import Foundation
 import ComposableArchitecture
 import SwiftUI
-import CocoaLumberjackSwift
 
 @Reducer
 struct AppFeature {
@@ -40,20 +39,20 @@ struct AppFeature {
             switch action {
             case .openMainWindow:
                 if !state.triggerOpenMainWindow {
-                    DDLogVerbose("AppFeature: .openMainWindow")
+                    logVerbose("AppFeature: .openMainWindow")
                     state.triggerOpenMainWindow = true
                 }
                 return .none
                 
             case .openSettings:
                 if !state.triggerOpenSettings {
-                    DDLogVerbose("AppFeature: .openSettings")
+                    logVerbose("AppFeature: .openSettings")
                     state.triggerOpenSettings = true
                 }
                 return .none
 
             case .quit:
-                DDLogVerbose("AppFeature: .quit")
+                logVerbose("AppFeature: .quit")
                 Task { @MainActor in
                     NSApplication.shared.terminate(self)
                 }
@@ -61,14 +60,14 @@ struct AppFeature {
                 
             case .resetTriggerOpenMainWindow:
                 if state.triggerOpenMainWindow {
-                    DDLogVerbose("AppFeature: .resetTriggerOpenMainWindow")
+                    logVerbose("AppFeature: .resetTriggerOpenMainWindow")
                     state.triggerOpenMainWindow = false
                 }
                 return .none
                 
             case .resetTriggerOpenSettings:
                 if state.triggerOpenSettings {
-                    DDLogVerbose("AppFeature: .resetTriggerOpenSettings")
+                    logVerbose("AppFeature: .resetTriggerOpenSettings")
                     state.triggerOpenSettings = false
                 }
                 return .none
@@ -114,7 +113,7 @@ struct ShooflerApp: App {
             if !appStore.triggerOpenMainWindow {
                 return
             }
-            DDLogVerbose("onChange(of: .triggerOpenMainWindow)")
+            logVerbose("onChange(of: .triggerOpenMainWindow)")
             openWindow(id: ShooflerApp.mainWIndowID)
             NSApp.activate(ignoringOtherApps: true)
             appStore.send(.resetTriggerOpenMainWindow)
@@ -125,7 +124,7 @@ struct ShooflerApp: App {
                 return
             }
             
-            DDLogVerbose("DDLogVerbose(of: .triggerOpenSettings)")
+            logVerbose("onChange(of: .triggerOpenSettings)")
             openSettings()
             NSApp.activate(ignoringOtherApps: true)
             appStore.send(.resetTriggerOpenSettings)
