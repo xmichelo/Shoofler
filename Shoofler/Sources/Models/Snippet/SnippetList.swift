@@ -10,8 +10,8 @@ public extension SnippetList {
     
     /// Get the snippets belonging to a given group.
     ///
-    /// - parameters:
-    ///     - groupID: the group ID.
+    /// - Parameters:
+    ///   - group: the group.
     ///
     /// - returns: The list of snippets belonging to the group.
     func snippetsOf(group: Group) -> SnippetList {

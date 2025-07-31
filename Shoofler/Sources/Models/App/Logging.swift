@@ -2,11 +2,20 @@ import CocoaLumberjackSwift
 
 /// Performs the initialization of the logging system.
 func setupLogging() {
+    // We log to the console
     let consoleLogger = DDOSLogger.sharedInstance
     consoleLogger.logFormatter = LogFormatter(levelIndicator: .emojiThenText, timestampFormat: .time)
     DDLog.add(DDOSLogger.sharedInstance, with: .verbose)
     
-    let fileLogger = DDFileLogger()
+    // We also log to file, in the folder ~/Library/Logs/Shoofler
+    let logFileManager = LogFileManager()
+    logFileManager.maximumNumberOfLogFiles = 20
+    logFileManager.logFilesDiskQuota = 200 * 1024 * 1024
+    
+    let fileLogger = DDFileLogger(logFileManager: logFileManager)
+    fileLogger.doNotReuseLogFiles = true
+    fileLogger.maximumFileSize = 50 * 1024 * 1024
+    fileLogger.rollingFrequency = 0
     fileLogger.logFormatter = LogFormatter(levelIndicator: .text, timestampFormat: .dateTime)
     DDLog.add(fileLogger, with: .debug)
 }
@@ -57,6 +66,12 @@ class LogFormatter: NSObject, DDLogFormatter {
         }
     }
     
+    /// Returns the timestamp string for a given date.
+    ///
+    /// - Parameters:
+    ///   - timestamp: the timestamp
+    ///
+    /// - Returns: a string containing the formatted timestamp.
     func timestampStringFor(_ timestamp: Date) -> String {
         timestamp.formatted(timestampFormat.rawValue)
         
@@ -172,5 +187,27 @@ extension TimestampFormatStyle: ExpressibleByStringLiteral {
     ///   - stringLiteral: the string literal.
     init(stringLiteral: String) {
         formatString = stringLiteral
+    }
+}
+
+// MARK: - LogFileManager
+
+/// Log file manager class that derives from the default one in order to customize the log file names
+class LogFileManager: DDLogFileManagerDefault {
+    /// Gets a new log file name
+    override var newLogFileName: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd_HHmmssSSS"
+        return "\(formatter.string(from: Date()))_Shoofler.log"
+    }
+    
+    /// Check if a file is a log file.
+    ///
+    /// - Parameters:
+    ///   - fileName: the file name.
+    ///
+    /// - Returns: true if and only if the file is a log file.
+    override func isLogFile(withName fileName: String) -> Bool {
+        return fileName.hasSuffix("_Shoofler.log")
     }
 }
