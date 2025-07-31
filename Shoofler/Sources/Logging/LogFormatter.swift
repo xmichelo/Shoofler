@@ -1,27 +1,5 @@
 import CocoaLumberjackSwift
 
-/// Performs the initialization of the logging system.
-func setupLogging() {
-    // We log to the console
-    let consoleLogger = DDOSLogger.sharedInstance
-    consoleLogger.logFormatter = LogFormatter(levelIndicator: .emojiThenText, timestampFormat: .time)
-    DDLog.add(DDOSLogger.sharedInstance, with: .verbose)
-    
-    // We also log to file, in the folder ~/Library/Logs/Shoofler
-    let logFileManager = LogFileManager()
-    logFileManager.maximumNumberOfLogFiles = 20
-    logFileManager.logFilesDiskQuota = 200 * 1024 * 1024
-    
-    let fileLogger = DDFileLogger(logFileManager: logFileManager)
-    fileLogger.doNotReuseLogFiles = true
-    fileLogger.maximumFileSize = 50 * 1024 * 1024
-    fileLogger.rollingFrequency = 0
-    fileLogger.logFormatter = LogFormatter(levelIndicator: .text, timestampFormat: .dateTime)
-    DDLog.add(fileLogger, with: .debug)
-}
-
-// MARK: - LogFormatter
-
 /// Custom log formatter class.
 class LogFormatter: NSObject, DDLogFormatter {
     private let levelIndicator: LevelIndicator
@@ -87,15 +65,15 @@ class LogFormatter: NSObject, DDLogFormatter {
         switch flag {
         case .verbose:
             return "[VERB]"
-        case .debug:   
+        case .debug:
             return "[DEBU]"
-        case .info:    
+        case .info:
             return "[INFO]"
-        case .warning: 
+        case .warning:
             return "[WARN]"
-        case .error:   
+        case .error:
             return "[ERRO]"
-        default: 
+        default:
             return "[UNKN]"
         }
     }
@@ -150,64 +128,4 @@ enum TimestampFormat: TimestampFormatStyle, Codable {
     
     /// Display the date and time.
     case dateTime = "yyyy-MM-dd HH:mm:ss.SSS OOOO"
-}
-
-// MARK: - TimestampFormatStyle
-
-/// Custom formatter for the timestamp.
-struct TimestampFormatStyle: FormatStyle, Equatable, Hashable {
-    let formatString: String
-        
-    /// Initializer for the timestamp format style.
-    ///
-    /// - Parameters:
-    ///   - formatString: The format string.
-    init(formatString: String) {
-        self.formatString = formatString
-    }
-    
-    /// Format a date.
-    ///
-    /// - Parameters:
-    ///   - value: The date to format
-    ///
-    /// - Returns: a string containing the formatted date.
-    func format(_ value: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = formatString
-        formatter.timeZone = TimeZone.current
-        return formatter.string(from: value)
-    }
-}
-
-extension TimestampFormatStyle: ExpressibleByStringLiteral {
-    /// Initializer using a string literal
-    ///
-    /// - Parameters:
-    ///   - stringLiteral: the string literal.
-    init(stringLiteral: String) {
-        formatString = stringLiteral
-    }
-}
-
-// MARK: - LogFileManager
-
-/// Log file manager class that derives from the default one in order to customize the log file names
-class LogFileManager: DDLogFileManagerDefault {
-    /// Gets a new log file name
-    override var newLogFileName: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd_HHmmssSSS"
-        return "\(formatter.string(from: Date()))_Shoofler.log"
-    }
-    
-    /// Check if a file is a log file.
-    ///
-    /// - Parameters:
-    ///   - fileName: the file name.
-    ///
-    /// - Returns: true if and only if the file is a log file.
-    override func isLogFile(withName fileName: String) -> Bool {
-        return fileName.hasSuffix("_Shoofler.log")
-    }
 }
