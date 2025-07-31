@@ -1,36 +1,19 @@
 import CocoaLumberjackSwift
 
-/// Custom log formatter class.
+/// Custom log formatter class defines the content of a log entry.
 class LogFormatter: NSObject, DDLogFormatter {
     private let levelIndicator: LevelIndicator
     private let timestampFormat: TimestampFormat
     
-    /// Class initializer
-    ///
-    /// - Parameters:
-    ///   - levelIndicator: the level indicator to use.
-    ///   - timestampFormat: the timestamp format
     init(levelIndicator: LevelIndicator, timestampFormat: TimestampFormat) {
         self.levelIndicator = levelIndicator
         self.timestampFormat = timestampFormat
     }
     
-    /// Formats the given log message as a string.
-    ///
-    /// - Parameters:
-    ///   - logMessage: the log message to format.
-    ///
-    /// - Returns: the fomatted string to displayed for the message.
     func format(message logMessage: DDLogMessage) -> String? {
         return "\(levelIndicatorStringFor(logMessage.flag)) \(timestampStringFor(logMessage.timestamp)) \(logMessage.message)"
     }
     
-    /// Returns the level indicator string for the given log message flag.
-    ///
-    /// - Parameters:
-    ///   - flag: The log message flag.
-    ///
-    /// - Returns: a string with the level indicator.
     func levelIndicatorStringFor(_ flag: DDLogFlag) -> String {
         switch levelIndicator {
         case .text:
@@ -44,23 +27,10 @@ class LogFormatter: NSObject, DDLogFormatter {
         }
     }
     
-    /// Returns the timestamp string for a given date.
-    ///
-    /// - Parameters:
-    ///   - timestamp: the timestamp
-    ///
-    /// - Returns: a string containing the formatted timestamp.
     func timestampStringFor(_ timestamp: Date) -> String {
         timestamp.formatted(timestampFormat.rawValue)
-        
     }
     
-    /// Returns the text level indicator string for the given log message flag.
-    ///
-    /// - Parameters:
-    ///   - flag:The log message flag.
-    ///
-    /// - Returns: a string with the text level indicator.
     static func textLevelIndicatorStringFor(_ flag: DDLogFlag) -> String {
         switch flag {
         case .verbose:
@@ -78,12 +48,6 @@ class LogFormatter: NSObject, DDLogFormatter {
         }
     }
 
-    /// Returns the emoji level indicator string for the given log message flag.
-    ///
-    /// - Parameters:
-    ///   - flag: The log message flag.
-    ///
-    /// - Returns: a string with the emoji level indicator.
     static func emojiLevelIndicatorStringFor(_ flag: DDLogFlag) -> String {
         switch flag {
         case .verbose:
@@ -104,28 +68,16 @@ class LogFormatter: NSObject, DDLogFormatter {
 
 // MARK: - LevelIndicator
 
-/// Enumeration for the level indication
 enum LevelIndicator {
-    /// The level is indicated by a string.
-    case text
-    
-    /// The level is indicated a colored circle emoji.
-    case emoji
-    
-    /// The level is indicated by a string followed by a colored circle emoji.
-    case textThenEmoji
-    
-    /// The level is indicated by a colored circle emoji followed by a string.
-    case emojiThenText
+    case text // e.g. "[WARN]"
+    case emoji // e.g. "🟠"
+    case textThenEmoji // e.g. "[WARN] 🟠"
+    case emojiThenText // e.g. "🟠 [WARN]"
 }
 
 // MARK: - TimeStampFormat
 
-/// Enumeration for the timestamp display format.
 enum TimestampFormat: TimestampFormatStyle, Codable {
-    /// Display only the time
     case time = "HH:mm:ss.SSS"
-    
-    /// Display the date and time.
     case dateTime = "yyyy-MM-dd HH:mm:ss.SSS OOOO"
 }

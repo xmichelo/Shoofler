@@ -9,8 +9,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         setupLogging()
         logInfo("Shoofler has started.")
-        if !AXIsProcessTrusted() {
+        if !appHasAccessibilityPermissions() {
+            // We want to force the window to be displayed.
+            logWarn("The application does not have accessibility permissions. The main window will open.")
             appStore.send(.openMainWindow)
+        } else {
+            logInfo("The application has accessibility permissions.")
         }
     }
     

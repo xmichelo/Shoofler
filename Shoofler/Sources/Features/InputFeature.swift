@@ -67,13 +67,6 @@ struct InputFeature {
         }
     }
     
-    /// Process a key event.
-    ///
-    /// - Parameters:
-    ///     - state: the state of the feature.
-    ///     - event: the event.
-    ///
-    /// - Returns: the effect resulting from the processing.
     func processKey(state: inout State, event: KeyEvent) -> Effect<InputFeature.Action> {
         if event.modifierFlags.contains(.command) {
             return .send(.resetAccumulator)

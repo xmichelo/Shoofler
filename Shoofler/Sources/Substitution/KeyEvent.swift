@@ -6,12 +6,6 @@ struct KeyEvent: Sendable {
     var keyCode: Int
     var modifierFlags: NSEvent.ModifierFlags
     
-    /// Create `KeyEvent` from a NSEvent.
-    ///
-    /// - Parameters:
-    ///     - nsEvent: the native event.
-    ///
-    /// - Returns: the sendable event.
     static func from(nsEvent: NSEvent) -> Self {
         return Self(
             characters: nsEvent.characters,

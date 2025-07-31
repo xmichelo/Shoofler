@@ -46,11 +46,6 @@ struct SubstituterFeature {
         }
     }
     
-    /// Synthesize pressing of the delete key.
-    ///
-    /// - Parameters:
-    ///     - repeatCount: the number of time to repeat the key press.
-    ///     - eventSource: the event source. Can be created using `CGEventSource(stateID:)`.
     func emulateDeleteKey(repeatCount: Int = 1, eventSource: CGEventSource?) {
         let backspaceDown = CGEvent(keyboardEventSource: eventSource, virtualKey: 0x33, keyDown: true)
         let backspaceUp = CGEvent(keyboardEventSource: eventSource, virtualKey: 0x33, keyDown: false)
@@ -61,10 +56,6 @@ struct SubstituterFeature {
         }
     }
     
-    /// Synthesize a paste event (Cmd+V).
-    ///
-    /// - Parameters:
-    ///     - eventSource: the event source. Can be created using `CGEventSource(stateID:)`.
     func emulatePaste(eventSource: CGEventSource?) {
         let keyDown = CGEvent(keyboardEventSource: eventSource, virtualKey: 0x09, keyDown: true)
         keyDown?.flags = .maskCommand
@@ -78,13 +69,6 @@ struct SubstituterFeature {
 }
 
 /// Evaluate a snippet by performing substitution of variables.
-///
-/// - Parameters:
-///     - snippet: the snippet.
-///     - pasteboardContent: the string content of the pasteboard before the trigger.
-///     - snippetList: the list of snippets.
-///
-/// - Returns: the snippet with all variable substitution done.
 func replaceVariablesIn(snippet: String, pasteboardContent: String?, snippetList: SnippetList) -> String {
     return snippet.replacingOccurrences(of: "#{clipboard}", with: pasteboardContent ?? "")
 }

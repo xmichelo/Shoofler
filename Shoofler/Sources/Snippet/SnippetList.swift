@@ -6,14 +6,7 @@ public typealias SnippetList = IdentifiedArrayOf<Snippet>
 let lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 
 public extension SnippetList {
-    // MARK: - member functions
-    
     /// Get the snippets belonging to a given group.
-    ///
-    /// - Parameters:
-    ///   - group: the group.
-    ///
-    /// - returns: The list of snippets belonging to the group.
     func snippetsOf(group: Group) -> SnippetList {
         return self.filter { $0.groupID == group.id }
     }
@@ -22,7 +15,6 @@ public extension SnippetList {
 public extension SnippetList {
     // MARK: - Sample data
     
-    /// A sample list of snippets with no groups.
     @MainActor static let sample: SnippetList = [
         Snippet(id: UUID(0), trigger: "!em0", content: "address1@example.com", description: "Email address at position 0", group: UUID(0)),
         Snippet(id: UUID(1), trigger: "!em1", content: "address1@example.com", description: "Email address at position 1", group: UUID(0)),
