@@ -5,6 +5,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @Dependency(\.appStore) var appStore
     
     var reopenCount: Int = 0
+    var shuttingDown: Bool = false
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         setupLogging()
@@ -15,6 +16,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             appStore.send(.openMainWindow)
         } else {
             logInfo("The application has accessibility permissions.")
+            let inputStore: StoreOf<InputFeature> = appStore.scope(state: \.engine.input, action: \.engine.input)
+            inputStore.send(.installKeyboardMonitor(inputStore))
         }
     }
     
@@ -28,5 +31,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             logVerbose("Ignoring reopen event #\(reopenCount) as part of the regular app startup process.")
         }
         return true
+    }
+    
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        if shuttingDown {
+            logInfo("Shoofler is shutting down.")
+            return .terminateNow
+        } else {
+            appStore.send(.performShutdownSequence)
+            shuttingDown = true
+            return .terminateCancel
+        }
     }
 }

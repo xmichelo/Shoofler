@@ -15,6 +15,19 @@ public struct ContentView: View {
             }
         }.onReceive(timer) { _ in
             isAccessibilityEnabled = AXIsProcessTrusted();
+            logDebug("Timer triggered. isAccessibilityEnabled: \(isAccessibilityEnabled)")
+        }.onChange(of: isAccessibilityEnabled) {
+            @Dependency(\.appStore) var appStore
+            if (!isAccessibilityEnabled) {
+                logInfo("Application does not have accessibility permissions anymore. Showing main window.")
+                appStore.send(.openMainWindow)
+            } else {
+                logInfo("The application now has accessibility permissions.")
+                let inputStore = appStore.scope(state: \.engine.input, action: \.engine.input)
+                inputStore.send(.installKeyboardMonitor(inputStore))
+            }
+            logDebug("Is accessibility enabled: \(isAccessibilityEnabled)")
+            
         }
     }
 }

@@ -24,4 +24,3 @@ func testSnippets() -> SnippetList{
         Snippet(id: UUID(8), trigger: "zz8", content: "This is snippet #8", description: "A test snippet at index 8", group: nil),
     ]
 }
-    

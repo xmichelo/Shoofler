@@ -22,6 +22,7 @@ struct AppFeature {
         case openSettings
         case quit
         
+        case performShutdownSequence
         case resetTriggerOpenMainWindow
         case resetTriggerOpenSettings
     }
@@ -52,11 +53,20 @@ struct AppFeature {
                 return .none
 
             case .quit:
-                logVerbose("AppFeature: .quit")
+                logInfo("Application shutdown was requested.")
                 Task { @MainActor in
+                    // The following will trigger the app delegate shutdown,
+                    // which will call the
                     NSApplication.shared.terminate(self)
                 }
                 return .none
+                
+            case .performShutdownSequence:
+                logInfo("Performing shutdown sequence.")
+                return .run { send in
+                    await send(.engine(.input(.uninstallKeyboardMonitor)))
+                    await NSApplication.shared.terminate(self)
+                }
                 
             case .resetTriggerOpenMainWindow:
                 if state.triggerOpenMainWindow {
@@ -91,8 +101,6 @@ struct ShooflerApp: App {
     
     init() {
         appStore.scope(state: \.settings, action: \.settings).send(.loadSettingsBlocking)
-        let inputStore = appStore.scope(state: \.engine.input, action: \.engine.input)
-        inputStore.send(.installKeyboardMonitor(inputStore))
     }
     
     var body: some Scene {

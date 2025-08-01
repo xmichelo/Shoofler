@@ -26,30 +26,56 @@ struct InputFeature {
     @ObservableState
     struct State: Equatable {
         var accumulator: String = ""
+        var monitorHandle: Any? = nil
+        
+        static func ==(lhs: Self, rhs: Self) -> Bool {
+            return lhs.accumulator == rhs.accumulator
+        }
     }
     
     enum Action {
         case installKeyboardMonitor(StoreOf<InputFeature>)
+        case uninstallKeyboardMonitor
         case keyPressed(KeyEvent)
         case accumulatorChanged(String)
         case resetAccumulator
+        case setMonitorHandle(Any?)
     }
     
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case .installKeyboardMonitor(let store):
-                return .run { _ in
+                if let handle = state.monitorHandle {
+                    NSEvent.removeMonitor(handle)
+                    logInfo("The existing event monitor was successfully removed.")
+                }
+                return .run { send in
                     // The event handler will outlive the run closure.
                     // TCA states that we should not use the closure's `send`
                     // parameter in this case, so the store is a parameter of the action.
-                    NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
+                    let handle = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
                         let keyEvent = KeyEvent.from(nsEvent: event)
                         Task {
                             await store.send(.keyPressed(keyEvent))
                         }
                     }
+                    if handle == nil {
+                        logError("Failed to add event monitor.");
+                    } else {
+                        logInfo("Event monitor was successfully added.");
+                    }
+                    await send(.setMonitorHandle(handle))
                 }
+                
+            case .uninstallKeyboardMonitor:
+                if let handle = state.monitorHandle {
+                    NSEvent.removeMonitor(handle)
+                    logInfo("Event monitor was successfully removed.")
+                } else {
+                    logWarn("Event monitor cannot be removed as its handle is nil.")
+                }
+                return .none
                 
             case .keyPressed(let event):
                 return processKey(state: &state, event: event)
@@ -62,6 +88,11 @@ struct InputFeature {
                     state.accumulator = ""
                     return .send(.accumulatorChanged(""));
                 }
+                return .none
+                
+            case .setMonitorHandle(let handle):
+                logVerbose("Input monitor set to \(handle ?? "nil")")
+                state.monitorHandle = handle
                 return .none
             }
         }
