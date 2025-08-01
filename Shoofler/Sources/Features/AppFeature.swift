@@ -9,6 +9,7 @@ struct AppFeature {
     struct State: Equatable {
         var settings = SettingsFeature.State()
         var engine = EngineFeature.State()
+        var systemMonitor = SystemMonitorFeature.State()
         
         var triggerOpenMainWindow: Bool = false
         var triggerOpenSettings: Bool = false
@@ -17,6 +18,7 @@ struct AppFeature {
     enum Action {
         case settings(SettingsFeature.Action)
         case engine(EngineFeature.Action)
+        case systemMonitor(SystemMonitorFeature.Action)
         
         case openMainWindow
         case openSettings
@@ -34,6 +36,10 @@ struct AppFeature {
 
         Scope(state: \.engine, action: \.engine) {
             EngineFeature()
+        }
+        
+        Scope(state: \.systemMonitor, action: \.systemMonitor) {
+            SystemMonitorFeature()
         }
         
         Reduce { state, action in
@@ -64,6 +70,7 @@ struct AppFeature {
             case .performShutdownSequence:
                 logInfo("Performing shutdown sequence.")
                 return .run { send in
+                    await send(.systemMonitor(.stopMonitoring))
                     await send(.engine(.input(.uninstallKeyboardMonitor)))
                     await NSApplication.shared.terminate(self)
                 }
@@ -82,7 +89,19 @@ struct AppFeature {
                 }
                 return .none
                 
-            case .settings, .engine:
+            case .systemMonitor(.accessibilityPermissionsChanged(let hasPermissions)):
+                if hasPermissions {
+                    logInfo("The application now has accessibility permissions.")
+                    return .send(.engine(.input(.installKeyboardMonitor)))
+                }
+                logInfo("The application does not have accessibility permissions anymore.")
+                return .run { send in
+                    await send(.engine(.input(.uninstallKeyboardMonitor)))
+                    await send(.openMainWindow)
+                }
+    
+                
+            case .settings, .engine, .systemMonitor:
                 return .none
             }
         }
@@ -105,7 +124,7 @@ struct ShooflerApp: App {
     
     var body: some Scene {
         Window("Shoofler", id: ShooflerApp.mainWIndowID) {
-            ContentView(store: appStore.scope(state: \.engine.vault, action: \.engine.vault))
+            ContentView(appStore: appStore)
                 .preferredColorScheme(appStore.settings.theme.colorScheme)
                 .onAppear {
                     setDockIconVisibility(visible: true)

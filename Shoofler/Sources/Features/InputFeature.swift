@@ -34,7 +34,7 @@ struct InputFeature {
     }
     
     enum Action {
-        case installKeyboardMonitor(StoreOf<InputFeature>)
+        case installKeyboardMonitor
         case uninstallKeyboardMonitor
         case keyPressed(KeyEvent)
         case accumulatorChanged(String)
@@ -45,7 +45,7 @@ struct InputFeature {
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case .installKeyboardMonitor(let store):
+            case .installKeyboardMonitor:
                 if let handle = state.monitorHandle {
                     NSEvent.removeMonitor(handle)
                     logInfo("The existing event monitor was successfully removed.")
@@ -56,8 +56,9 @@ struct InputFeature {
                     // parameter in this case, so the store is a parameter of the action.
                     let handle = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
                         let keyEvent = KeyEvent.from(nsEvent: event)
-                        Task {
-                            await store.send(.keyPressed(keyEvent))
+                        Task { @MainActor in
+                            @Dependency(\.appStore) var appStore
+                            appStore.send(.engine(.input(.keyPressed(keyEvent))))
                         }
                     }
                     if handle == nil {

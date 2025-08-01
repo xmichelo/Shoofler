@@ -10,15 +10,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         setupLogging()
         logInfo("Shoofler has started.")
-        if !appHasAccessibilityPermissions() {
-            // We want to force the window to be displayed.
-            logWarn("The application does not have accessibility permissions. The main window will open.")
-            appStore.send(.openMainWindow)
-        } else {
-            logInfo("The application has accessibility permissions.")
-            let inputStore: StoreOf<InputFeature> = appStore.scope(state: \.engine.input, action: \.engine.input)
-            inputStore.send(.installKeyboardMonitor(inputStore))
-        }
+        
+        appStore.send(.systemMonitor(.startMonitoring))
+//        if !appHasAccessibilityPermissions() {
+//            // We want to force the window to be displayed.
+//            logWarn("The application does not have accessibility permissions. The main window will open.")
+//            appStore.send(.openMainWindow)
+//        } else {
+//            logInfo("The application has accessibility permissions.")
+//            let inputStore: StoreOf<InputFeature> = appStore.scope(state: \.engine.input, action: \.engine.input)
+//            inputStore.send(.installKeyboardMonitor())
+//        }
     }
     
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
