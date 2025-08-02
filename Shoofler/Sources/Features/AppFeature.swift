@@ -46,14 +46,14 @@ struct AppFeature {
             switch action {
             case .openMainWindow:
                 if !state.triggerOpenMainWindow {
-                    logVerbose("AppFeature: .openMainWindow")
+                    logInfo("Opening main window.")
                     state.triggerOpenMainWindow = true
                 }
                 return .none
                 
             case .openSettings:
                 if !state.triggerOpenSettings {
-                    logVerbose("AppFeature: .openSettings")
+                    logInfo("Opening settings window.")
                     state.triggerOpenSettings = true
                 }
                 return .none
@@ -61,8 +61,6 @@ struct AppFeature {
             case .quit:
                 logInfo("Application shutdown was requested.")
                 Task { @MainActor in
-                    // The following will trigger the app delegate shutdown,
-                    // which will call the
                     NSApplication.shared.terminate(self)
                 }
                 return .none
@@ -71,32 +69,30 @@ struct AppFeature {
                 logInfo("Performing shutdown sequence.")
                 return .run { send in
                     await send(.systemMonitor(.stopMonitoring))
-                    await send(.engine(.input(.uninstallKeyboardMonitor)))
+                    await send(.engine(.input(.removeEventMonitor)))
                     await NSApplication.shared.terminate(self)
                 }
                 
             case .resetTriggerOpenMainWindow:
                 if state.triggerOpenMainWindow {
-                    logVerbose("AppFeature: .resetTriggerOpenMainWindow")
                     state.triggerOpenMainWindow = false
                 }
                 return .none
                 
             case .resetTriggerOpenSettings:
                 if state.triggerOpenSettings {
-                    logVerbose("AppFeature: .resetTriggerOpenSettings")
                     state.triggerOpenSettings = false
                 }
                 return .none
                 
             case .systemMonitor(.accessibilityPermissionsChanged(let hasPermissions)):
                 if hasPermissions {
-                    logInfo("The application now has accessibility permissions.")
-                    return .send(.engine(.input(.installKeyboardMonitor)))
+                    logInfo("The application has accessibility permissions.")
+                    return .send(.engine(.input(.addEventMonitor)))
                 }
-                logInfo("The application does not have accessibility permissions anymore.")
+                logInfo("The application does not have accessibility permissions.")
                 return .run { send in
-                    await send(.engine(.input(.uninstallKeyboardMonitor)))
+                    await send(.engine(.input(.removeEventMonitor)))
                     await send(.openMainWindow)
                 }
     

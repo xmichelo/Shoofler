@@ -34,8 +34,8 @@ struct InputFeature {
     }
     
     enum Action {
-        case installKeyboardMonitor
-        case uninstallKeyboardMonitor
+        case addEventMonitor
+        case removeEventMonitor
         case keyPressed(KeyEvent)
         case accumulatorChanged(String)
         case resetAccumulator
@@ -45,10 +45,10 @@ struct InputFeature {
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case .installKeyboardMonitor:
+            case .addEventMonitor:
                 if let handle = state.monitorHandle {
                     NSEvent.removeMonitor(handle)
-                    logInfo("The existing event monitor was successfully removed.")
+                    logInfo("The existing event monitor was successfully added.")
                 }
                 return .run { send in
                     // The event handler will outlive the run closure.
@@ -69,12 +69,12 @@ struct InputFeature {
                     await send(.setMonitorHandle(handle))
                 }
                 
-            case .uninstallKeyboardMonitor:
+            case .removeEventMonitor:
                 if let handle = state.monitorHandle {
                     NSEvent.removeMonitor(handle)
                     logInfo("Event monitor was successfully removed.")
                 } else {
-                    logWarn("Event monitor cannot be removed as its handle is nil.")
+                    logInfo("Event monitor is not installed.")
                 }
                 return .none
                 
@@ -92,7 +92,6 @@ struct InputFeature {
                 return .none
                 
             case .setMonitorHandle(let handle):
-                logVerbose("Input monitor set to \(handle ?? "nil")")
                 state.monitorHandle = handle
                 return .none
             }

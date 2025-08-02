@@ -3,7 +3,7 @@ import SwiftUI
 
 struct GroupListView: View {
     @Bindable var store: StoreOf<VaultFeature>
-    @State var searchText: String = ""
+//    @State var searchText: String = ""
     
     func badgeValue(for group: Group) -> Int {
         return store.snippets.snippetsOf(group: group).count
@@ -56,7 +56,7 @@ struct GroupListView: View {
                 .help("Remove Group")
             }
         }
-        .searchable(text: $searchText, prompt: "Search Snippets")
+        //.searchable(text: $searchText, prompt: "Search Snippets")
     }
 }
 
