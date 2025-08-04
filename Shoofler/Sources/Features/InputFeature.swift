@@ -48,6 +48,7 @@ struct InputFeature {
             case .addEventMonitor:
                 if let handle = state.monitorHandle {
                     NSEvent.removeMonitor(handle)
+                    state.monitorHandle = nil
                     logInfo("The existing event monitor was successfully added.")
                 }
                 return .run { send in
@@ -72,6 +73,7 @@ struct InputFeature {
             case .removeEventMonitor:
                 if let handle = state.monitorHandle {
                     NSEvent.removeMonitor(handle)
+                    state.monitorHandle = nil
                     logInfo("Event monitor was successfully removed.")
                 } else {
                     logInfo("Event monitor is not installed.")
