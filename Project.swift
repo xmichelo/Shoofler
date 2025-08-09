@@ -80,9 +80,10 @@ func shooflerPList() -> InfoPlist {
             "CFBundleDisplayName": "$(PRODUCT_NAME)",
             "CFBundleName": "$(PRODUCT_NAME)",
             "CFBundleShortVersionString": "0.1.0",
-            "CFBundleVersion": "9",
+            "CFBundleVersion": "10",
             "LSApplicationCategoryType": "public.app-category.productivity",
             "LSUIElement": true,
+            "SMLoginItemRegistered": false,
             "UTExportedTypeDeclarations": [
                 [
                     "UTTypeIdentifier": "app.shoofler.Snippet",

@@ -7,65 +7,87 @@ struct SettingsFeature: Sendable {
     struct State: Equatable {
         var theme: Theme = .system
         var showWindowOnStartup: Bool = false
+        var startOnLogin: Bool = false
     }
     
     var settingsClient: SettingsClientProtocol = AppStorageSettingsClient()
+    let loginItemManager = LoginItemManager()
     
     
     enum Action {
         case loadSettingsBlocking
         case loadSettings
         case saveSettings
-        case settingsLoaded(TaskResult<SettingsFeature.State>)
-        case settingsSaved(TaskResult<Void>)
+        case settingsLoaded(SettingsFeature.State)
         case showWindowOnStartupToggled(Bool)
+        case startOnLoginToggled(Bool)
         case themeSelected(Theme)
     }
     
-    func loadSettings() -> State {
+    func loadSettings()  async -> State {
         do {
-            return try settingsClient.load()
+            var state = try (settingsClient.load as () throws -> SettingsFeature.State)()
+            state.startOnLogin = await loginItemManager.isEnabled()
+            return state
         } catch {
-            return State()
+            var state = SettingsFeature.State()
+            state.startOnLogin = await loginItemManager.isEnabled()
+            logError("Failed to load settings: \(error)")
+            return state
         }
+    }
+    
+    func loadSettingsBLocking() -> State {
+        let semaphore = DispatchSemaphore(value: 0)
+        var state = State()
+        Task {
+            state = await loadSettings()
+            semaphore.signal()
+        }
+        semaphore.wait()
+        return state
     }
     
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case .loadSettingsBlocking:
-                state = self.loadSettings()
-                return .none
+                state = loadSettingsBLocking()
+                return .send(.settingsLoaded(loadSettingsBLocking()))
                 
             case .loadSettings:
                 return .run { send in
-                    await send(
-                        .settingsLoaded(
-                            TaskResult { try await settingsClient.load() }
-                        )
-                    )
+                    let state = await loadSettings()
+                    await send(.settingsLoaded(state))
                 }
+                
             case .saveSettings:
-                let s = state
-                return .run { send in
-                    await send(
-                        .settingsSaved(
-                            TaskResult { try await settingsClient.save(s) }
-                        )
-                    )
+                return .run { [state] send in
+                    do {
+                        try await settingsClient.save(state)
+                    } catch {
+                        logError("Failed to save settings: \(error)")
+                    }
                 }
-            case .settingsLoaded(.success(let settings)):
+                
+            case .settingsLoaded(let settings):
                 state = settings
                 return .none
-            case .settingsLoaded(.failure):
-                return .none
-            case .settingsSaved(.success()):
-                return .none
-            case .settingsSaved(.failure):
-                return .none
+            
             case .showWindowOnStartupToggled(let isOn):
                 state.showWindowOnStartup = isOn
                 return .send(.saveSettings)
+            
+            case .startOnLoginToggled(let isOn):
+                state.startOnLogin = isOn
+                return .run { [loginItemManager] send in
+                    do {
+                        try await loginItemManager.setEnabled(isOn)
+                    } catch {
+                        logError("Failed to set login item: \(error)")
+                    }
+                }
+                
             case .themeSelected(let theme):
                 state.theme = theme
                 return .send(.saveSettings)
@@ -80,13 +102,18 @@ struct SettingsView: View {
     var body: some View {
         TabView {
             Tab("General", systemImage: "slider.horizontal.3") {
-                VStack {
+                VStack(alignment: .leading) {
                     Toggle(
                         "Show window on startup",
                         isOn: $store.showWindowOnStartup.sending(\.showWindowOnStartupToggled)
                     )
+                    Toggle(
+                        "Start on login",
+                        isOn: $store.startOnLogin.sending(\.startOnLoginToggled)
+                    )
                     Spacer()
                 }
+                .frame(alignment: .leading)
                 .padding()
             }
             Tab("Appearance", systemImage: "display") {
@@ -96,7 +123,6 @@ struct SettingsView: View {
                             Text(mode.rawValue).tag(mode)
                         }
                     }
-                    .pickerStyle(.segmented)
                     Spacer()
                 }
                 .padding()
