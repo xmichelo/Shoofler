@@ -37,6 +37,7 @@ struct SettingsFeature: Sendable {
         }
     }
     
+    // this function exist because on startup we want to ensure the settings are properly loaded before we do anything.
     func loadSettingsBLocking() -> State {
         let semaphore = DispatchSemaphore(value: 0)
         var state = State()
@@ -102,33 +103,16 @@ struct SettingsView: View {
     var body: some View {
         TabView {
             Tab("General", systemImage: "slider.horizontal.3") {
-                VStack(alignment: .leading) {
-                    Toggle(
-                        "Show window on startup",
-                        isOn: $store.showWindowOnStartup.sending(\.showWindowOnStartupToggled)
-                    )
-                    Toggle(
-                        "Start on login",
-                        isOn: $store.startOnLogin.sending(\.startOnLoginToggled)
-                    )
-                    Spacer()
-                }
-                .frame(alignment: .leading)
+                GeneralSettingsTabView(store: store)
                 .padding()
             }
+            
             Tab("Appearance", systemImage: "display") {
-                VStack {
-                    Picker("Theme", selection: $store.theme.sending(\.themeSelected)) {
-                        ForEach(Theme.allCases, id: \.self) { mode in
-                            Text(mode.rawValue).tag(mode)
-                        }
-                    }
-                    Spacer()
-                }
+                AppearanceSettingsTabView(store: store)
                 .padding()
             }
         }
-        .frame(minWidth: 300)
+        .frame(width: 300, alignment: .leading)
         .preferredColorScheme(store.theme.colorScheme)
         .onAppear {
             store.send(.loadSettings)
@@ -136,6 +120,43 @@ struct SettingsView: View {
     }
 }
 
+struct GeneralSettingsTabView: View {
+    @Bindable var store: StoreOf<SettingsFeature>
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Toggle(
+                "Show window on startup",
+                isOn: $store.showWindowOnStartup.sending(\.showWindowOnStartupToggled)
+            )
+            Toggle(
+                "Start on login",
+                isOn: $store.startOnLogin.sending(\.startOnLoginToggled)
+            )
+            Spacer()
+        }
+    }
+}
+
+struct AppearanceSettingsTabView: View {
+    @Bindable var store: StoreOf<SettingsFeature>
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Picker("Theme", selection: $store.theme.sending(\.themeSelected)) {
+                    ForEach(Theme.allCases, id: \.self) { mode in
+                        Text(mode.rawValue).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
+                Spacer()
+
+            }
+            Spacer()
+        }
+    }
+}
 #Preview {
     SettingsView(store: Store(initialState: SettingsFeature.State()) { SettingsFeature() })
 }
