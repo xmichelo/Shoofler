@@ -19,7 +19,7 @@ struct GroupListView: View {
                 }
                 .dropDestination(for: Snippet.self) { snippets, location in
                     for snippet in snippets {
-                        store.send(.snippetDroppedOnGroup((snippet, group.id)))
+                        store.send(.dragAndDrop(.snippetDroppedOnGroup((snippet, group.id))))
                     }
                     return true
                 }

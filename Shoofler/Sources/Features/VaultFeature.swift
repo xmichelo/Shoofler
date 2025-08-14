@@ -8,12 +8,15 @@ struct VaultFeature {
     struct State: Equatable {
         @Shared(.groups) var groups: GroupList = []
         @Shared(.snippets) var snippets: SnippetList = []
+        
         var selectedGroup: Group?
         var selectedSnippet: Snippet?
-
+        
         @Presents var addEditSnippet: AddEditSnippetFeature.State?
         @Presents var addEditGroup: AddEditGroupFeature.State?
         @Presents var alert: AlertState<Action.Alert>?
+        
+        var dragAndDrop = DragAndDropFeature.State()
         
         static func == (lhs: VaultFeature.State, rhs: VaultFeature.State) -> Bool {
             return lhs.groups == rhs.groups &&
@@ -24,9 +27,8 @@ struct VaultFeature {
     }
     
     enum Action {
+        case dragAndDrop(DragAndDropFeature.Action)
         case groupSelected(Group?)
-        case snippetDroppedOnGroup((Snippet, Group.ID))
-        case snippetDroppedOnSnippet((Snippet, Snippet.ID))
         case snippetSelected(Snippet?)
         case snippetDoubleClicked(Snippet)
         case addSnippetActionTriggered
@@ -48,34 +50,12 @@ struct VaultFeature {
     }
     
     var body: some ReducerOf<Self> {
+        Scope(state: \.dragAndDrop, action: \.dragAndDrop) {
+            DragAndDropFeature()
+        }
+        
         Reduce { state, action in
             switch action {
-            case .snippetDroppedOnGroup((let snippet, let groupID)):
-                _ = state.$snippets.withLock { snippets in
-                    snippets[id: snippet.id]?.groupID = groupID
-                }
-                return .none
-                
-            case .snippetDroppedOnSnippet((let snippet, let targetSnippetID)):
-                withAnimation(.spring(duration: 6.0)) {
-                    state.$snippets.withLock { snippets in
-                        guard
-                            let srcIndex = snippets.index(id: snippet.id),
-                            let dstIndex = snippets.index(id: targetSnippetID)
-                        else {
-                            return
-                        }
-                        let indexSet = IndexSet(integer: srcIndex)
-                        snippets.move(fromOffsets: indexSet,
-                                      toOffset:dstIndex
-                        )
-                        //                        fr: IndexSet(integer: srcIndex),
-                        //                        toOffset: IndexSet(dstIndex
-                        //                    )
-                    }
-                }
-                return .none
-                
             case .groupSelected(let group):
                 state.selectedGroup = group
                 state.selectedSnippet = nil
@@ -165,6 +145,9 @@ struct VaultFeature {
              
                 
             case .alert:
+                return .none
+                
+            case .dragAndDrop(_):
                 return .none
                 
             }

@@ -26,7 +26,7 @@ struct SnippetListView: View {
                     )
                     .dropDestination(for: Snippet.self) { snippets, location in
                         for droppedSnippet in snippets {
-                            store.send(.snippetDroppedOnSnippet((droppedSnippet, snippet.id)))
+                            store.send(.dragAndDrop(.snippetDroppedOnSnippet((droppedSnippet, snippet.id))))
                         }
                         return true
                     }
