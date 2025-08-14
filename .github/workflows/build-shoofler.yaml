@@ -1,0 +1,44 @@
+name: Build Shoofler
+run-name: Build Shoofer
+on: [push]
+jobs:
+  Build-Shoofler:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Select Xcode 16.4
+        run: |
+          sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+      - name: Install Tuist 4.50.0
+        run: |
+          brew update
+          brew tap tuist/tuist
+          brew install --formula tuist@4.50.0
+      - name: System Info
+        run: |
+          echo "Runner info:"
+          echo -n "- OS: $(sw_vers | awk '/ProductName/ {print $2}') "
+          echo -n "$(sw_vers | awk '/ProductVersion/ {print $2}') "
+          echo "(build $(sw_vers | awk '/BuildVersion/ {print $2}'))"
+          echo "- Architecture: ${{ runner.arch }}"
+          echo "- Name: ${{ runner.name }}"
+          echo "- Environment: ${{ runner.environment }}"
+          echo "- Xcode version: $(s=$(xcodebuild -version | tr '\n' ' '); echo ${s:6})"
+          echo "- tuist version: $(tuist version)"
+      - name: Build Shoofler
+        run: |
+          tuist install
+          tuist generate --no-open
+          tuist build --os macos -C Release Shoofler --build-output-path /tmp/ShooflerBuild
+      - name: Archive app bundle
+        run: |
+          zip -r /tmp/ShooflerBuild/Release/Shoofler.zip /tmp/ShooflerBuild/Release/Shoofler.app
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: shoofler-app
+          path: |
+            /tmp/ShooflerBuild/Release/Shoofler.zip
+          retention-days: 30
+
+
