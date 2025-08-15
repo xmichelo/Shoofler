@@ -1,8 +1,8 @@
-name: Build Shoofler
-run-name: Build Shoofer
+name: Build
+run-name: Build
 on: [push]
 jobs:
-  Build-Shoofler:
+  Build:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v5
@@ -40,5 +40,3 @@ jobs:
           path: |
             /tmp/ShooflerBuild/Release/Shoofler.zip
           retention-days: 30
-
-

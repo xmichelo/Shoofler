@@ -1,3 +1,9 @@
+<div align="center">
+  
+[![Build](https://github.com/xmichelo/Shoofler/actions/workflows/Build.yaml/badge.svg)](https://github.com/xmichelo/Shoofler/actions/workflows/Build.yaml)
+
+</div>
+
 # Shoofler
 
 Shoofler is a text expansion tool for macOS.
